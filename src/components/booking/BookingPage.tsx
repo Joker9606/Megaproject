@@ -169,7 +169,7 @@ export function BookingPage({
       address: address.trim(),
       neighborhood: proNeighborhood,
       timeSlot: customDate ? `${customDate} (${selectedSlot})` : selectedSlot,
-      price: baselineRate,
+      price: 'Custom Quote on Visit',
       taskDetails: fullDescription,
       status: 'Confirmed',
       otp,
@@ -298,36 +298,40 @@ export function BookingPage({
                 </div>
               </div>
 
-              {/* Transparent Price Breakdown */}
+              {/* Transparent Work-Based Quote Breakdown */}
               <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3.5 text-left">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center justify-between">
-                  <span>Transparent Price Estimate</span>
+                  <span>Work Scope & Payment Structure</span>
                   <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    Fixed Rates in INR
+                    Custom Quote on Work
                   </span>
                 </h3>
 
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between text-slate-600">
-                    <span>Base Service Labor & Inspection:</span>
-                    <span className="font-bold text-slate-900">{baselineRate}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-slate-600">
-                    <span>Visiting / Diagnostic Fee:</span>
+                    <span>Doorstep Visiting & Inspection:</span>
                     <span className="font-bold text-emerald-600">FREE (₹0)</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-600">
+                    <span>Labor & Repair Charge:</span>
+                    <span className="font-bold text-slate-900">Agreed on-site by actual work</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-600">
+                    <span>Advance Payment Required:</span>
+                    <span className="font-bold text-emerald-600">₹0 (Pay Post-Service)</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-600">
                     <span>30-Day Neighborhood Warranty:</span>
-                    <span className="font-bold text-blue-600">Included</span>
+                    <span className="font-bold text-blue-600">Included (Free re-check)</span>
                   </div>
                   <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-sm">
-                    <span className="font-extrabold text-slate-900">Total Due Upon Completion:</span>
-                    <span className="font-black text-xl text-slate-900">{baselineRate}</span>
+                    <span className="font-extrabold text-slate-900">Payment Due:</span>
+                    <span className="font-black text-base text-emerald-700">Settled After Job Satisfaction</span>
                   </div>
                 </div>
 
                 <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 text-[11px] text-blue-800 leading-relaxed">
-                  💡 <b>No advance deposit required.</b> Inspect the completed work first, then pay directly to the professional via UPI, Cash, or Card.
+                  💡 <b>Zero upfront payment.</b> The technician inspects the task at your doorstep, agrees on the work scope, and you only pay after work completion.
                 </div>
               </div>
 
@@ -651,12 +655,12 @@ export function BookingPage({
                 <span className="font-semibold text-slate-900 truncate max-w-[200px]">{address}</span>
               </div>
               <div className="flex items-center justify-between text-slate-600">
-                <span>Estimated Price:</span>
-                <span className="font-bold text-emerald-700">{baselineRate}</span>
+                <span>Payment:</span>
+                <span className="font-bold text-emerald-700">Custom Quote (Pay After Service)</span>
               </div>
               <div className="flex items-center justify-between text-slate-600">
                 <span>Payment Mode:</span>
-                <span className="font-semibold text-slate-900">Pay after completion ({paymentMethod})</span>
+                <span className="font-semibold text-slate-900">{paymentMethod} / Cash / UPI</span>
               </div>
             </div>
 

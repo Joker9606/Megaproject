@@ -73,7 +73,7 @@ export function EmergencySOSModal({ isOpen, onClose }: EmergencySOSModalProps) {
             address: address.trim(),
             neighborhood: resident?.neighborhood || matched.neighborhood || 'Indiranagar / 100ft Road',
             timeSlot: 'Immediate Dispatch (< 15 mins)',
-            price: matched.hourlyRate || '₹249',
+            price: 'Custom Quote on Visit',
             taskDetails: `Urgent Emergency Callout: ${selectedOption.name}`,
             status: 'Confirmed',
             otp,
@@ -293,7 +293,7 @@ export function EmergencySOSModal({ isOpen, onClose }: EmergencySOSModalProps) {
                 </div>
 
                 <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Baseline Rate: <b className="text-slate-900">{formatINR(matchedPro.hourlyRate)}</b></span>
+                  <span className="text-emerald-700 font-bold">Pay After Service • Zero Advance</span>
                   <span className="text-amber-700 font-mono font-bold">Start PIN: {generatedOtp}</span>
                 </div>
               </div>

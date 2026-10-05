@@ -46,7 +46,7 @@ export function ServicesSection({ onSelectService, onBookService, onOpenExploreA
           </h2>
 
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            Book verified local professionals for electrical, plumbing, carpentry, AC repair, cleaning, and tutoring at transparent fixed rates in INR.
+            Book verified local professionals with doorstep inspection, custom work-based quotes, and pay after completion.
           </p>
         </div>
 
@@ -146,8 +146,10 @@ export function ServicesSection({ onSelectService, onBookService, onOpenExploreA
                 <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Baseline Rate</span>
-                      <span className="text-sm font-black text-slate-900">{formatINR(service.startingPrice)}</span>
+                      <span className="text-[10px] text-slate-400 block">Pricing Scheme</span>
+                      <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                        Custom Quote on Work
+                      </span>
                     </div>
 
                     <button
@@ -165,7 +167,7 @@ export function ServicesSection({ onSelectService, onBookService, onOpenExploreA
                     className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all transform hover:scale-[1.02] flex items-center justify-center gap-1.5"
                   >
                     <Calendar className="w-3.5 h-3.5" />
-                    <span>Book Service ({formatINR(service.startingPrice)})</span>
+                    <span>Book Service Slot</span>
                   </button>
                 </div>
               </div>

@@ -19,12 +19,12 @@ import { FinalCTASection } from './components/sections/FinalCTASection';
 import { Footer } from './components/sections/Footer';
 
 import { BookingPage } from './components/booking/BookingPage';
+import { MyBookingsPage } from './components/booking/MyBookingsPage';
 import { FindServiceModal } from './components/modals/FindServiceModal';
 import { ServiceDetailsModal } from './components/modals/ServiceDetailsModal';
 import { JoinProModal } from './components/modals/JoinProModal';
 import { AppDownloadModal } from './components/modals/AppDownloadModal';
 import { EmergencySOSModal } from './components/modals/EmergencySOSModal';
-import { MyBookingsModal } from './components/modals/MyBookingsModal';
 import { NoWorkerAvailableModal } from './components/modals/NoWorkerAvailableModal';
 import { ResidentProfileModal } from './components/modals/ResidentProfileModal';
 
@@ -33,8 +33,8 @@ import { ServiceItem, VerifiedPro } from './types';
 function MainLayout() {
   const { services, pros } = useNetwork();
 
-  // Page view routing: 'home' | 'booking'
-  const [currentView, setCurrentView] = useState<'home' | 'booking'>('home');
+  // Page view routing: 'home' | 'booking' | 'my-bookings'
+  const [currentView, setCurrentView] = useState<'home' | 'booking' | 'my-bookings'>('home');
 
   // Modal states
   const [isFindModalOpen, setIsFindModalOpen] = useState(false);
@@ -43,7 +43,6 @@ function MainLayout() {
   const [isJoinProModalOpen, setIsJoinProModalOpen] = useState(false);
   const [isAppDownloadModalOpen, setIsAppDownloadModalOpen] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
-  const [isBookingsModalOpen, setIsBookingsModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNoWorkerModalOpen, setIsNoWorkerModalOpen] = useState(false);
   const [unavailableService, setUnavailableService] = useState<ServiceItem | null>(null);
@@ -136,6 +135,11 @@ function MainLayout() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenMyBookings = () => {
+    setCurrentView('my-bookings');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white relative">
       {/* Navigation */}
@@ -143,22 +147,29 @@ function MainLayout() {
         onOpenFindModal={() => handleOpenFindModal()}
         onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
         onOpenJoinModal={handleOpenJoinPro}
-        onOpenBookingsModal={() => setIsBookingsModalOpen(true)}
+        onOpenBookingsModal={handleOpenMyBookings}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
         onNavigateHome={handleNavigateHome}
       />
 
-      {/* Main Content View: Booking Page OR Home Page */}
+      {/* Main Content View: Booking Page OR My Bookings Page OR Home Page */}
       {currentView === 'booking' ? (
         <main className="py-6 sm:py-10">
           <BookingPage
             service={bookingService}
             pro={bookingPro}
             onBack={handleNavigateHome}
-            onOpenMyBookings={() => {
+            onOpenMyBookings={handleOpenMyBookings}
+            onOpenExploreServices={() => {
               handleNavigateHome();
-              setIsBookingsModalOpen(true);
+              handleOpenFindModal('all');
             }}
+          />
+        </main>
+      ) : currentView === 'my-bookings' ? (
+        <main className="py-6 sm:py-10">
+          <MyBookingsPage
+            onBack={handleNavigateHome}
             onOpenExploreServices={() => {
               handleNavigateHome();
               handleOpenFindModal('all');
@@ -284,20 +295,13 @@ function MainLayout() {
         onClose={() => setIsEmergencyModalOpen(false)}
       />
 
-      {/* Resident Saved Bookings History Modal */}
-      <MyBookingsModal
-        isOpen={isBookingsModalOpen}
-        onClose={() => setIsBookingsModalOpen(false)}
-        onOpenExploreServices={() => handleOpenFindModal('all')}
-      />
-
       {/* Resident Profile & Essential Details Modal */}
       <ResidentProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         onOpenBookings={() => {
           setIsProfileModalOpen(false);
-          setIsBookingsModalOpen(true);
+          handleOpenMyBookings();
         }}
       />
 

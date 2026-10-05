@@ -147,7 +147,7 @@ function PhoneModel() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold truncate">Rajesh Sharma</span>
-                  <span className="text-xs text-emerald-400 font-extrabold">₹249</span>
+                  <span className="text-[10px] text-emerald-400 font-extrabold bg-emerald-500/20 px-1.5 py-0.5 rounded">Verified Pro</span>
                 </div>
                 <div className="text-[9px] text-slate-300 flex items-center gap-1 mt-0.5">
                   <span className="text-amber-400 font-bold">⭐ 4.98</span>

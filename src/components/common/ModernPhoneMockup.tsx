@@ -85,7 +85,7 @@ export function ModernPhoneMockup() {
               <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                 Verified Category
               </span>
-              <span className="text-[11px] font-extrabold text-emerald-400">from ₹199</span>
+              <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">Pay Post-Service</span>
             </div>
 
             <div className="flex items-center gap-2.5 pt-0.5">
@@ -123,7 +123,7 @@ export function ModernPhoneMockup() {
             </div>
 
             <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px]">
-              <span className="text-slate-400">Rate: <b className="text-white">₹249</b></span>
+              <span className="text-emerald-400 font-bold">Free Inspection Quote</span>
               <div className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-[10px] flex items-center gap-1">
                 <Phone className="w-2.5 h-2.5" />
                 <span>Contact Pro</span>

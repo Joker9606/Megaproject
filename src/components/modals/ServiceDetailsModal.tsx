@@ -83,11 +83,11 @@ export function ServiceDetailsModal({
             {/* Standard Pricing & Turnaround Info Banner */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Standard Rate</div>
-                <div className="text-base sm:text-lg font-black text-emerald-600 mt-0.5">
-                  from {formatINR(service.startingPrice)}
+                <div className="text-[10px] text-slate-500 uppercase font-semibold">Pricing Scheme</div>
+                <div className="text-sm sm:text-base font-black text-emerald-600 mt-0.5">
+                  Custom Quote on Work
                 </div>
-                <div className="text-[10px] text-slate-400">Transparent baseline</div>
+                <div className="text-[10px] text-slate-400">Pay after completion</div>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
@@ -191,8 +191,10 @@ export function ServiceDetailsModal({
 
                       <div className="flex items-center justify-between w-full sm:w-auto gap-3">
                         <div className="text-left sm:text-right">
-                          <div className="text-[10px] text-slate-500">Baseline Rate</div>
-                          <div className="text-xs font-bold text-slate-900">{formatINR(pro.hourlyRate)}</div>
+                          <div className="text-[10px] text-slate-500">Pricing Mode</div>
+                          <div className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                            Custom Quote on Work
+                          </div>
                         </div>
 
                         {onBookPro && (
@@ -254,7 +256,7 @@ export function ServiceDetailsModal({
                 className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-2"
               >
                 <Calendar className="w-4 h-4" />
-                <span>Book This Service ({formatINR(service.startingPrice)})</span>
+                <span>Book This Service Slot</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             )}

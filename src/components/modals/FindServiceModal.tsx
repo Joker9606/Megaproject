@@ -196,8 +196,10 @@ export function FindServiceModal({
 
                   <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
                     <div className="text-left sm:text-right">
-                      <div className="text-xs text-slate-500">Baseline Rate</div>
-                      <div className="text-lg font-extrabold text-slate-900">{formatINR(pro.hourlyRate)}</div>
+                      <div className="text-xs text-slate-500">Pricing Mode</div>
+                      <div className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                        Custom Quote on Work
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
@@ -231,7 +233,7 @@ export function FindServiceModal({
                           className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
                         >
                           <Calendar className="w-3.5 h-3.5" />
-                          <span>Book</span>
+                          <span>Book Pro</span>
                         </button>
                       )}
                     </div>
@@ -251,8 +253,8 @@ export function FindServiceModal({
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto leading-relaxed">
                     {activeServiceObj
-                      ? `${activeServiceObj.description} Baseline rates start from ${formatINR(activeServiceObj.startingPrice)} with zero advance payment.`
-                      : 'Browse complete service descriptions, baseline rates in INR (₹), and neighborhood trade standards.'}
+                      ? `${activeServiceObj.description} Direct doorstep inspection with work-based custom pricing and zero advance fees.`
+                      : 'Browse verified local service professionals with doorstep inspection and post-service payment guarantee.'}
                   </p>
                 </div>
 
@@ -266,7 +268,7 @@ export function FindServiceModal({
                       className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-2"
                     >
                       <Calendar className="w-4 h-4" />
-                      <span>Book {activeServiceObj.name} ({formatINR(activeServiceObj.startingPrice)})</span>
+                      <span>Book {activeServiceObj.name} Slot</span>
                     </button>
                   )}
 

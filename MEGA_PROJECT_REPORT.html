@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mega Project Report - Smart Neighborhood Help Network</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-alt: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background-color: #f1f5f9;
+      line-height: 1.65;
+      padding: 2rem 1rem;
+    }
+
+    .report-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 3.5rem 4rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .report-container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+    }
+
+    /* Typography */
+    h1.main-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: #e0f2fe;
+      color: #0369a1;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p, li {
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* Metadata Box */
+    .meta-box {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .meta-item strong {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .meta-item span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    /* Team List */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .team-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .team-card span.num {
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    /* Progress bar */
+    .progress-bar-bg {
+      background: #e2e8f0;
+      border-radius: 9999px;
+      height: 8px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-bar-fill {
+      background: var(--primary);
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    /* Action bar */
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-container">
+    
+    <!-- Action Bar (Hidden on print) -->
+    <div class="action-bar no-print">
+      <button onclick="window.print()" class="btn btn-primary">
+        🖨️ Print / Save as PDF
+      </button>
+    </div>
+
+    <!-- Header Section -->
+    <div class="badge">MEGA PROJECT REPORT 2026</div>
+    <h1 class="main-title">SMART NEIGHBORHOOD HELP NETWORK</h1>
+    <div class="subtitle">A Next-Generation Hyperlocal Community Assistance & Emergency SOS Platform</div>
+
+    <!-- Metadata Table -->
+    <div class="meta-box">
+      <div class="meta-item">
+        <strong>Project Type</strong>
+        <span>Final Year Mega Project</span>
+      </div>
+      <div class="meta-item">
+        <strong>Academic Year</strong>
+        <span>2025 – 2026</span>
+      </div>
+      <div class="meta-item">
+        <strong>Domain</strong>
+        <span>Full-Stack Web Development, 3D Spatial Computing (WebGL)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Current Status</strong>
+        <span>40% (Functional Frontend & 3D Spatial Prototype)</span>
+      </div>
+    </div>
+
+    <!-- Team Members List -->
+    <h3>Project Presented By:</h3>
+    <div class="team-grid">
+      <div class="team-card"><span class="num">01.</span> Atharva Patil</div>
+      <div class="team-card"><span class="num">02.</span> Siddhi Pitambare</div>
+      <div class="team-card"><span class="num">03.</span> Rushikesh Kudalkar</div>
+      <div class="team-card"><span class="num">04.</span> Abhishek Ingale</div>
+    </div>
+
+    <!-- 1. ABSTRACT -->
+    <h2>1. Abstract</h2>
+    <p>
+      In modern residential communities, finding reliable, background-verified local technicians (plumbers, electricians, carpenters, appliance mechanics) and receiving immediate aid during household emergencies remains fragmented, inefficient, and opaque. Commercial aggregators impose steep commission fees, lack real-time proximity awareness, and fail to provide specialized emergency response protocols.
+    </p>
+    <p style="margin-top: 0.5rem;">
+      The <strong>Smart Neighborhood Help Network</strong> is an innovative hyperlocal web application designed to bridge the gap between neighborhood residents, skilled trade professionals, and emergency responders. Leveraging <strong>3D Spatial Computing (Three.js / WebGL)</strong>, the platform visualizes real-time technician availability on an interactive 3D digital twin map. The platform incorporates a <strong>1-click Emergency SOS broadcast</strong>, <strong>multi-tier dynamic service booking</strong>, and an <strong>onboarding portal with an interactive earnings calculator for local workers</strong>.
+    </p>
+
+    <!-- 2. PROBLEM STATEMENT & OBJECTIVES -->
+    <h2>2. Problem Statement & Objectives</h2>
+    <p><strong>Problem Statement:</strong> <em>"To design and develop a full-fledged, real-time, 3D spatial web application that facilitates instant discovery, transparent booking of verified hyperlocal trade services, and rapid 1-click Emergency SOS broadcast for residential communities without intermediary commission exploitation."</em></p>
+    
+    <h3 style="margin-top: 1rem;">Core Objectives:</h3>
+    <ul>
+      <li><strong>Spatial Proximity Awareness:</strong> Provide an interactive 3D map showing live worker status (Available, On-Job, Emergency).</li>
+      <li><strong>Rapid Emergency SOS:</strong> Deliver sub-15 minute emergency response dispatch to nearby certified professionals.</li>
+      <li><strong>Transparent Multi-Tier Pricing:</strong> Implement upfront, tiered pricing (Standard, Priority, Emergency) with zero hidden fees.</li>
+      <li><strong>Empowering Skilled Labor:</strong> Provide a dedicated portal for local technicians to manage schedules, track earnings, and build neighborhood reputation.</li>
+    </ul>
+
+    <!-- 3. COMPARISON TABLE -->
+    <h2>3. Literature Survey: Existing vs. Proposed System</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature / Metric</th>
+          <th>Traditional Directories</th>
+          <th>Commercial Aggregators</th>
+          <th>Smart Neighborhood (Proposed)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Spatial Proximity</strong></td>
+          <td>❌ None (Static Lists)</td>
+          <td>❌ Approximate Distance</td>
+          <td>✅ <strong>Interactive 3D WebGL Map</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Emergency SOS</strong></td>
+          <td>❌ None</td>
+          <td>❌ None</td>
+          <td>✅ <strong>1-Click Priority SOS Beacon</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Worker Commission</strong></td>
+          <td>Subscription Based</td>
+          <td>20% – 30% Deductions</td>
+          <td>✅ <strong>Zero / Transparent Fee</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Verification & Trust</strong></td>
+          <td>❌ Unverified</td>
+          <td>⚠️ Centralized</td>
+          <td>✅ <strong>Multi-tier KYC & Ratings</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Tiered Pricing</strong></td>
+          <td>❌ Ambiguous quotes</td>
+          <td>⚠️ Fixed flat rates</td>
+          <td>✅ <strong>Standard, Priority & Emergency</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 4. SYSTEM WORKFLOWS -->
+    <h2>4. System Workflows</h2>
+
+    <h3>4.1 Resident / User Workflow</h3>
+    <ol>
+      <li><strong>Browse & Search:</strong> User opens the platform and explores the interactive 3D spatial neighborhood map or filters the directory by 8+ categories (Plumbing, Electrical, Carpentry, Appliances, etc.).</li>
+      <li><strong>Select Service Tier:</strong> User selects from <em>Standard</em>, <em>Priority</em>, or triggers the <em>Emergency SOS</em> beacon.</li>
+      <li><strong>Confirm Booking:</strong> User selects time slot, provides address/task description, receives an instant transparent cost estimate, and receives a unique booking code.</li>
+      <li><strong>Service Delivery & Review:</strong> Verified worker executes the task; upon satisfactory completion, the resident submits a community rating and review.</li>
+    </ol>
+
+    <h3>4.2 Worker / Professional Workflow</h3>
+    <ol>
+      <li><strong>Registration & KYC:</strong> Local tradesperson signs up, submits skill certifications, sets hourly rates, and defines service radius.</li>
+      <li><strong>Set Live Availability:</strong> Worker toggles their active status (<em>Available</em>, <em>On-Job</em>, <em>Off-Duty</em>) which reflects in real time on the 3D map.</li>
+      <li><strong>Accept Bookings / SOS Alerts:</strong> Worker receives instant notifications for standard appointments or high-priority Emergency SOS alerts.</li>
+      <li><strong>Job Execution & Payout:</strong> Worker completes the job on-site, receives verified OTP sign-off, receives direct payment, and builds verified reputation.</li>
+    </ol>
+
+    <!-- 5. IMPLEMENTED FEATURES -->
+    <h2>5. Key Features Built Till Now</h2>
+    <ul>
+      <li><strong>1. 3D Spatial Map Discovery:</strong> Visual 3D neighborhood scene with rotating buildings, directional lighting, and status markers.</li>
+      <li><strong>2. Emergency SOS Alert System:</strong> 1-touch urgent emergency broadcast prioritizing nearest certified responders for household risks.</li>
+      <li><strong>3. Multi-Tier Service Booking:</strong> Standard, Priority, and Emergency booking with dynamic upfront pricing & confirmation code generation.</li>
+      <li><strong>4. Verified Professional Directory:</strong> Categorized search across 8+ service sectors displaying ratings, completed jobs count, and verified skills.</li>
+      <li><strong>5. Worker Registration & Onboarding:</strong> Dedicated multi-field form for local technicians to register their services and set hourly rates.</li>
+      <li><strong>6. Pro Income Calculator:</strong> Interactive tool for technicians to project weekly, monthly, and annual revenue.</li>
+    </ul>
+
+    <!-- 6. TECH STACK -->
+    <h2>6. Technologies & Tools Used</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Technologies</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend Core</strong></td>
+          <td>React, TypeScript, Vite, HTML5, CSS3</td>
+        </tr>
+        <tr>
+          <td><strong>3D Graphics & Spatial</strong></td>
+          <td>Three.js, React Three Fiber, React Three Drei, WebGL Shaders</td>
+        </tr>
+        <tr>
+          <td><strong>Styling & UI</strong></td>
+          <td>Tailwind CSS, Framer Motion, Lucide Icons, PostCSS</td>
+        </tr>
+        <tr>
+          <td><strong>Backend & DB (Active)</strong></td>
+          <td>Node.js, Express, WebSockets (Socket.io), PostgreSQL</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 7. PROGRESS -->
+    <h2>7. Project Progress Status (40% Completion)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Subsystem / Module</th>
+          <th>Status</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend UI & Web Application Layouts</strong></td>
+          <td>Functional & Responsive</td>
+          <td>75%</td>
+        </tr>
+        <tr>
+          <td><strong>3D Spatial Neighborhood Scene</strong></td>
+          <td>Functional Prototype</td>
+          <td>70%</td>
+        </tr>
+        <tr>
+          <td><strong>Service Directory & Booking Logic</strong></td>
+          <td>Client Logic Active</td>
+          <td>60%</td>
+        </tr>
+        <tr>
+          <td><strong>Emergency SOS Dispatch Beacon</strong></td>
+          <td>UI & State Active</td>
+          <td>50%</td>
+        </tr>
+        <tr>
+          <td><strong>Backend REST APIs & WebSockets</strong></td>
+          <td>In Active Development</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td><strong>Database Schema & User Auth</strong></td>
+          <td>In Design Phase</td>
+          <td>15%</td>
+        </tr>
+        <tr>
+          <td><strong>Payment Escrow Gateway</strong></td>
+          <td>Upcoming Sprint</td>
+          <td>10%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 8. ROADMAP -->
+    <h2>8. Future Roadmap (Remaining Scope)</h2>
+    <ul>
+      <li><strong>Phase 1: Backend REST APIs & WebSockets:</strong> Node.js / Express backend with live worker GPS tracking and SOS broadcast channels.</li>
+      <li><strong>Phase 2: Database & Authentication:</strong> PostgreSQL schema with Prisma ORM and role-based JWT authentication (Resident, Worker, Admin).</li>
+      <li><strong>Phase 3: Payment Gateway & Escrow:</strong> Razorpay / Stripe escrow payment integration releasing funds upon customer OTP sign-off.</li>
+      <li><strong>Phase 4: Full App Testing & Mobile PWA:</strong> Progressive Web App build with push notifications and offline emergency SMS fallback.</li>
+    </ul>
+
+    <!-- 9. CONCLUSION -->
+    <h2>9. Conclusion</h2>
+    <p>
+      The <strong>Smart Neighborhood Help Network</strong> represents a comprehensive solution combining 3D spatial discovery, hyperlocal service management, and rapid emergency assistance into a unified web application. With the client-side prototype and 3D spatial engine fully operational (<strong>40% overall project milestone</strong>), the subsequent engineering sprints will focus on the Node.js backend, PostgreSQL database, and escrow payment integration to deliver a full-fledged production platform.
+    </p>
+
+    <div style="margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+      <span>Smart Neighborhood Help Network • Mega Project 2026</span>
+      <span>Atharva Patil • Siddhi Pitambare • Rushikesh Kudalkar • Abhishek Ingale</span>
+    </div>
+
+  </div>
+
+</body>
+</html>

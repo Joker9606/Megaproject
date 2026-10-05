@@ -57,6 +57,7 @@ export function WorkerDashboard() {
     updateWorkerProfile,
     bookings,
     updateBookingStatus,
+    completeBookingWithPayment,
     addWorkerJob,
     getWorkerJobs,
   } = useAuth();
@@ -69,6 +70,12 @@ export function WorkerDashboard() {
   const [jobStep, setJobStep] = useState<number>(1);
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpError, setOtpError] = useState(false);
+
+  // Dynamic Pricing & Final Settlement State (Worker sets price according to work done)
+  const [customFinalPrice, setCustomFinalPrice] = useState<string>('249');
+  const [workDoneNotes, setWorkDoneNotes] = useState<string>('');
+  const [paymentMode, setPaymentMode] = useState<'UPI' | 'Cash'>('UPI');
+  const [finalSettledAmount, setFinalSettledAmount] = useState<string>('₹249');
 
   // File Upload Ref for Worker PFP
   const workerFileInputRef = useRef<HTMLInputElement>(null);
@@ -128,6 +135,11 @@ export function WorkerDashboard() {
   // Saved Jobs for this worker
   const completedJobs = getWorkerJobs(worker?.id);
 
+  // Reviews & ratings submitted by customers for this worker
+  const workerReviews = bookings.filter((b) => b.proId === worker?.id && b.rating);
+  const liveRating = worker?.rating || 5.0;
+  const liveReviewsCount = worker?.reviewsCount || workerReviews.length || 0;
+
   // Compute live total earnings from completed jobs
   const totalEarningsCalculated = completedJobs.reduce((sum, job) => {
     const amt = parseInt(job.earnedAmount.replace(/[^0-9]/g, ''), 10) || 0;
@@ -156,6 +168,8 @@ export function WorkerDashboard() {
   const handleAcceptLead = (lead: JobLead) => {
     setActiveJob(lead);
     setJobStep(1);
+    setCustomFinalPrice(lead.offeredPrice.replace(/[^0-9]/g, '') || '249');
+    setWorkDoneNotes(lead.notes || lead.serviceRequired);
     setActiveTab('active');
   };
 
@@ -170,35 +184,47 @@ export function WorkerDashboard() {
     }
   };
 
-  // Finish Job
-  const handleCompleteJob = () => {
+  // Finish Job with Custom Price & Scope Updated on Website
+  const handleCompleteJob = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!activeJob || !worker) return;
+
+    const amountClean = customFinalPrice.replace(/[^0-9]/g, '') || '249';
+    const finalAmountStr = `₹${amountClean}`;
+    setFinalSettledAmount(finalAmountStr);
 
     // Save job entry permanently to worker's profile
     const invoiceNum = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
     const newJobRecord: WorkerJobRecord = {
       id: `job-${Date.now()}`,
       workerId: worker.id,
+      bookingId: activeJob.id,
       customerName: activeJob.customerName,
       customerPhone: activeJob.customerPhone,
       address: activeJob.address,
       neighborhood: activeJob.neighborhood,
       serviceTitle: activeJob.serviceRequired,
-      notes: activeJob.notes,
-      earnedAmount: activeJob.offeredPrice,
+      notes: workDoneNotes.trim() || activeJob.notes,
+      earnedAmount: finalAmountStr,
       completedAt: new Date().toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
       }),
-      paymentMethod: 'UPI',
+      paymentMethod: paymentMode,
       invoiceNumber: invoiceNum,
       status: 'Completed',
     };
 
     addWorkerJob(newJobRecord);
-    // Update booking status in resident history to Completed
-    updateBookingStatus(activeJob.id, 'Completed');
+    // Update booking status in resident history to Completed with dynamic final price & work summary
+    completeBookingWithPayment(
+      activeJob.id,
+      finalAmountStr,
+      workDoneNotes.trim() || activeJob.serviceRequired,
+      paymentMode
+    );
+
     setJobStep(4);
     try {
       confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
@@ -293,8 +319,12 @@ export function WorkerDashboard() {
                 <p className="text-lg font-black text-blue-600">{completedJobs.length}</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Base Rate</p>
-                <p className="text-lg font-black text-slate-800">{worker?.hourlyRate}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Pro Rating</p>
+                <p className="text-lg font-black text-amber-600 flex items-center justify-center gap-1">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
+                  <span>{liveRating}</span>
+                  <span className="text-xs text-slate-400 font-normal">({liveReviewsCount})</span>
+                </p>
               </div>
             </div>
           </div>
@@ -528,44 +558,147 @@ export function WorkerDashboard() {
                   </form>
                 )}
 
-                {/* STEP 3: WORK IN PROGRESS */}
+                {/* STEP 3: WORK IN PROGRESS & FINAL PAYMENT SETTLEMENT */}
                 {jobStep === 3 && (
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                        <Clock className="w-4 h-4 animate-spin" />
+                  <form onSubmit={handleCompleteJob} className="space-y-4">
+                    <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                          <Clock className="w-4 h-4 animate-spin" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-emerald-900">Work in Progress</p>
+                          <p className="text-[11px] text-slate-500">Service underway at customer doorstep</p>
+                        </div>
                       </div>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        OTP Verified
+                      </span>
+                    </div>
+
+                    {/* Dynamic Work Scope & Payment Settlement Box */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">
+                            Work Completion & Payment Settlement
+                          </h4>
+                          <p className="text-[11px] text-slate-500">
+                            Charge according to actual work done, parts replaced, and time spent.
+                          </p>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                          Dynamic Pricing
+                        </span>
+                      </div>
+
+                      {/* Work Description Input */}
                       <div>
-                        <p className="text-xs font-bold text-emerald-800">Work in Progress</p>
-                        <p className="text-[11px] text-slate-500">Complete the task and inspect all connections</p>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">
+                          Tasks & Work Completed Summary *
+                        </label>
+                        <textarea
+                          rows={2}
+                          required
+                          value={workDoneNotes}
+                          onChange={(e) => setWorkDoneNotes(e.target.value)}
+                          placeholder="e.g. Replaced faulty circuit breaker, tightened electrical wiring, tested all sockets..."
+                          className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+                        />
+                      </div>
+
+                      {/* Final Payment to Collect & Mode */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">
+                            Final Amount to Collect (₹) *
+                          </label>
+                          <div className="relative flex items-center">
+                            <span className="absolute left-3.5 text-sm font-bold text-slate-500">₹</span>
+                            <input
+                              type="number"
+                              min="0"
+                              required
+                              value={customFinalPrice}
+                              onChange={(e) => setCustomFinalPrice(e.target.value)}
+                              placeholder="249"
+                              className="w-full pl-8 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                            />
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Updated on the customer website receipt instantly.
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1">
+                            Payment Mode Collected
+                          </label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPaymentMode('UPI')}
+                              className={`py-2 px-3 rounded-xl text-xs font-bold border transition ${
+                                paymentMode === 'UPI'
+                                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                                  : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              UPI / Online
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPaymentMode('Cash')}
+                              className={`py-2 px-3 rounded-xl text-xs font-bold border transition ${
+                                paymentMode === 'Cash'
+                                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                                  : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              Cash In Hand
+                            </button>
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Direct 100% payout to you (0% commission).
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     <button
-                      type="button"
-                      onClick={handleCompleteJob}
-                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-sm transition"
+                      type="submit"
+                      className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition transform hover:scale-[1.01] flex items-center justify-center gap-2"
                     >
-                      Job Completed - Collect {activeJob.offeredPrice}
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>Complete Job • Record ₹{customFinalPrice || '0'} Payment & Update Website</span>
                     </button>
-                  </div>
+                  </form>
                 )}
 
                 {/* STEP 4: JOB COMPLETE */}
                 {jobStep === 4 && (
-                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
+                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-4">
                     <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
                       <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-extrabold text-slate-900">Job Saved & Recorded!</h3>
-                    <p className="text-xs text-slate-600">
-                      Payment of <span className="font-bold text-emerald-700">{activeJob.offeredPrice}</span> has been permanently saved to your Pro profile.
-                    </p>
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900">Job Saved & Updated on Website!</h3>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Final payment of <span className="font-bold text-emerald-700">{finalSettledAmount}</span> has been permanently saved to your Pro profile & customer receipt.
+                      </p>
+                    </div>
+
+                    {workDoneNotes && (
+                      <div className="p-3 bg-white border border-slate-200 rounded-xl text-left text-xs max-w-md mx-auto">
+                        <p className="text-[10px] text-slate-400 font-semibold uppercase">Recorded Work Scope:</p>
+                        <p className="text-slate-800 mt-0.5">{workDoneNotes}</p>
+                      </div>
+                    )}
 
                     <button
                       type="button"
                       onClick={handleDismissCompletedJob}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs"
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-sm transition"
                     >
                       View in Earnings & Invoices
                     </button>
@@ -658,6 +791,94 @@ export function WorkerDashboard() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+            </div>
+
+            {/* Customer Ratings & Reviews Received */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">Neighborhood Customer Reviews</h3>
+                    <p className="text-xs text-slate-500">Live feedback and ratings given after job completion</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-bold text-xs">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
+                  <span>{liveRating} / 5.0</span>
+                  <span className="text-slate-400 font-normal">({liveReviewsCount} Reviews)</span>
+                </div>
+              </div>
+
+              {workerReviews.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                  <Star className="w-8 h-8 text-slate-300 mx-auto" />
+                  <p className="text-xs font-bold text-slate-700">No Customer Reviews Yet</p>
+                  <p className="text-[11px] text-slate-500">
+                    When residents complete their service bookings and submit ratings, their feedback will appear here in real-time.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {workerReviews.map((rev) => (
+                    <div
+                      key={rev.id}
+                      className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">{rev.customerName}</p>
+                          <p className="text-[10px] text-slate-500">{rev.serviceName}</p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`w-3 h-3 ${
+                                  s <= (rev.rating || 5)
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-slate-200'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs font-bold text-amber-800 ml-1">
+                            {rev.rating}.0
+                          </span>
+                        </div>
+                      </div>
+
+                      {rev.feedback && (
+                        <p className="text-xs text-slate-700 italic">
+                          "{rev.feedback}"
+                        </p>
+                      )}
+
+                      {rev.feedbackTags && rev.feedbackTags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {rev.feedbackTags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-semibold text-slate-700"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="text-[10px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-200/60">
+                        <span>Invoice: {rev.id}</span>
+                        <span>{rev.feedbackGivenAt || 'Recent'}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

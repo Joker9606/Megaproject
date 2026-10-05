@@ -534,6 +534,61 @@ export async function updateBookingStatusInFirestore(
 }
 
 /**
+ * Complete Booking with Dynamic Custom Price & Work Summary in Cloud Firestore
+ */
+export async function completeBookingInFirestore(
+  bookingId: string,
+  finalAmount: string,
+  workSummary: string
+): Promise<void> {
+  if (!db) return;
+
+  try {
+    const bookingDocRef = doc(db, COLLECTIONS.BOOKINGS, bookingId);
+    await updateDoc(bookingDocRef, {
+      status: 'Completed',
+      price: finalAmount,
+      finalAmount,
+      workSummary,
+      updatedAt: serverTimestamp(),
+    });
+    console.log(`✅ [Firestore] Booking ${bookingId} completed with final payment: ${finalAmount}`);
+  } catch (error) {
+    console.error('[Firestore] Error completing booking:', error);
+  }
+}
+
+/**
+ * Submit User Rating & Feedback for a Completed Booking in Cloud Firestore
+ */
+export async function submitBookingFeedbackInFirestore(
+  bookingId: string,
+  rating: number,
+  feedback: string,
+  feedbackTags: string[] = []
+): Promise<void> {
+  if (!db) return;
+
+  try {
+    const bookingDocRef = doc(db, COLLECTIONS.BOOKINGS, bookingId);
+    await updateDoc(bookingDocRef, {
+      rating,
+      feedback,
+      feedbackTags,
+      feedbackGivenAt: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      updatedAt: serverTimestamp(),
+    });
+    console.log(`✅ [Firestore] Feedback recorded for Booking ${bookingId}: ${rating} stars`);
+  } catch (error) {
+    console.error('[Firestore] Error saving booking feedback:', error);
+  }
+}
+
+/**
  * Real-time Listener for all Bookings (ordered by creation)
  */
 export function subscribeToAllBookings(

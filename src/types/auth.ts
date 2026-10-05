@@ -16,15 +16,24 @@ export interface BookingRecord {
   neighborhood: string;
   timeSlot: string;
   price: string;
+  finalAmount?: string;
+  workSummary?: string;
   taskDetails: string;
   status: 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled';
   createdAt: string;
   otp: string;
+
+  // Feedback & Reviews from Resident
+  rating?: number;
+  feedback?: string;
+  feedbackTags?: string[];
+  feedbackGivenAt?: string;
 }
 
 export interface WorkerJobRecord {
   id: string;
   workerId: string;
+  bookingId?: string;
   customerName: string;
   customerPhone: string;
   address: string;
@@ -36,6 +45,8 @@ export interface WorkerJobRecord {
   paymentMethod: 'UPI' | 'Cash';
   invoiceNumber: string;
   status: 'Completed';
+  rating?: number;
+  feedback?: string;
 }
 
 export interface ResidentUser {

@@ -19,6 +19,8 @@ import {
   signOutFromFirebase,
   createBookingInFirestore,
   updateBookingStatusInFirestore,
+  completeBookingInFirestore,
+  submitBookingFeedbackInFirestore,
   subscribeToAllBookings,
   subscribeToWorkers,
   updateWorkerInFirestore,
@@ -77,6 +79,18 @@ interface AuthContextType {
   addBooking: (booking: Omit<BookingRecord, 'id' | 'createdAt'>) => BookingRecord;
   cancelBooking: (bookingId: string) => void;
   updateBookingStatus: (bookingId: string, status: 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled') => void;
+  completeBookingWithPayment: (
+    bookingId: string,
+    finalAmount: string,
+    workSummary: string,
+    paymentMethod?: 'UPI' | 'Cash'
+  ) => void;
+  submitBookingFeedback: (
+    bookingId: string,
+    rating: number,
+    feedback: string,
+    feedbackTags?: string[]
+  ) => void;
   getUserBookings: (userId?: string) => BookingRecord[];
 
   // Registered Workers from Cloud Firestore
@@ -463,6 +477,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateBookingStatusInFirestore(bookingId, status);
   };
 
+  // COMPLETE BOOKING WITH CUSTOM FINAL PAYMENT & WORK SUMMARY
+  const completeBookingWithPayment = (
+    bookingId: string,
+    finalAmount: string,
+    workSummary: string,
+    paymentMethod: 'UPI' | 'Cash' = 'UPI'
+  ) => {
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId
+          ? {
+              ...b,
+              status: 'Completed' as const,
+              price: finalAmount,
+              finalAmount,
+              workSummary,
+            }
+          : b
+      )
+    );
+
+    // Update in Cloud Firestore Database
+    completeBookingInFirestore(bookingId, finalAmount, workSummary);
+  };
+
+  // SUBMIT RESIDENT RATING & FEEDBACK
+  const submitBookingFeedback = (
+    bookingId: string,
+    rating: number,
+    feedback: string,
+    feedbackTags: string[] = []
+  ) => {
+    const feedbackDate = new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    let targetProId: string | undefined;
+
+    setBookings((prev) =>
+      prev.map((b) => {
+        if (b.id === bookingId) {
+          targetProId = b.proId;
+          return {
+            ...b,
+            rating,
+            feedback,
+            feedbackTags,
+            feedbackGivenAt: feedbackDate,
+          };
+        }
+        return b;
+      })
+    );
+
+    // Update worker's rating and reviews count if proId matches
+    if (targetProId) {
+      setWorkers((prevWorkers) =>
+        prevWorkers.map((w) => {
+          if (w.id === targetProId) {
+            const newCount = (w.reviewsCount || 0) + 1;
+            const currentAvg = w.rating || 5.0;
+            const newRating = Number((((currentAvg * (w.reviewsCount || 0)) + rating) / newCount).toFixed(1));
+            const updatedWorker = {
+              ...w,
+              rating: newRating,
+              reviewsCount: newCount,
+            };
+            // Persist worker rating to Cloud Firestore
+            updateWorkerInFirestore(w.id, { rating: newRating, reviewsCount: newCount });
+            return updatedWorker;
+          }
+          return w;
+        })
+      );
+    }
+
+    // Persist feedback to Cloud Firestore
+    submitBookingFeedbackInFirestore(bookingId, rating, feedback, feedbackTags);
+  };
+
   // GET USER BOOKINGS
   const getUserBookings = (userId?: string): BookingRecord[] => {
     const targetId = userId || currentUser?.id;
@@ -517,6 +613,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         addBooking,
         cancelBooking,
         updateBookingStatus,
+        completeBookingWithPayment,
+        submitBookingFeedback,
         getUserBookings,
         workers,
         workerJobs,

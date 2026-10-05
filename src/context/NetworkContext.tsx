@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ServiceItem, VerifiedPro, CategoryGroup, NeighborhoodHotspot } from '../types';
 import { ALL_SERVICES_DATA, DEFAULT_CATEGORY_GROUPS, INITIAL_VERIFIED_PROS } from '../data/mockData';
 import { formatINR } from '../utils/formatCurrency';
+import { isFirebaseConfigured } from '../firebase/config';
+import { subscribeToWorkers } from '../firebase/services';
 
 interface NetworkContextType {
   services: ServiceItem[];
@@ -35,13 +37,12 @@ const LOCAL_STORAGE_KEY_PROS = 'smart_neighborhood_pros_inr_v4';
 const LOCAL_STORAGE_KEY_CATEGORIES = 'smart_neighborhood_categories_inr_v4';
 
 export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. Services State - sanitized against any dollar caches
+  // 1. Services State
   const [services, setServices] = useState<ServiceItem[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY_SERVICES);
       if (saved) {
         const parsed: ServiceItem[] = JSON.parse(saved);
-        // Sanitize every price to ensure ₹ format
         return parsed.map((s) => ({
           ...s,
           startingPrice: formatINR(s.startingPrice),
@@ -53,7 +54,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return ALL_SERVICES_DATA;
   });
 
-  // 2. Pros State - initialized from verified pros & registered workers
+  // 2. Pros State
   const [pros, setPros] = useState<VerifiedPro[]>(() => {
     try {
       const savedPros = localStorage.getItem(LOCAL_STORAGE_KEY_PROS);
@@ -128,15 +129,49 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return DEFAULT_CATEGORY_GROUPS;
   });
 
-  // Clear any legacy v1/v2/v3 dollar keys from localStorage automatically
+  // Firestore Live Listener for Pro registrations
   useEffect(() => {
-    try {
-      ['smart_neighborhood_services', 'smart_neighborhood_pros', 'smart_neighborhood_services_v2', 'smart_neighborhood_pros_v2', 'smart_neighborhood_services_inr_v3', 'smart_neighborhood_pros_inr_v3'].forEach((k) => {
-        localStorage.removeItem(k);
+    if (!isFirebaseConfigured()) return;
+
+    const unsub = subscribeToWorkers((liveWorkers) => {
+      setPros((prev) => {
+        const merged = [...prev];
+        liveWorkers.forEach((w) => {
+          const existingIdx = merged.findIndex((p) => p.id === w.id || p.email === w.email);
+          const proObj: VerifiedPro = {
+            id: w.id,
+            name: w.name,
+            avatar: w.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+            service: w.serviceName,
+            serviceId: w.serviceId,
+            rating: w.rating || 5.0,
+            reviewsCount: w.reviewsCount || 0,
+            distance: '0.5 km away',
+            neighborhood: w.neighborhood || 'Indiranagar / 100ft Road',
+            isAvailableNow: w.isAvailableNow ?? true,
+            isEmergencyReady: w.emergencyReady ?? true,
+            hourlyRate: formatINR(w.hourlyRate || '249'),
+            badges: ['Aadhaar Verified', 'Police Checked', 'Firebase Synced'],
+            bio: w.bio || `Certified neighborhood professional in ${w.serviceName}.`,
+            completedCount: 0,
+            joinedYear: '2026',
+            phone: w.phone,
+            email: w.email,
+          };
+
+          if (existingIdx >= 0) {
+            merged[existingIdx] = { ...merged[existingIdx], ...proObj };
+          } else {
+            merged.unshift(proObj);
+          }
+        });
+        return merged;
       });
-    } catch {
-      // ignore
-    }
+    });
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   // Save to localStorage

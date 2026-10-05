@@ -8,55 +8,81 @@ import {
   BookingRecord,
   WorkerJobRecord,
 } from '../types/auth';
-import { formatINR } from '../utils/formatCurrency';
+import { isFirebaseConfigured } from '../firebase/config';
+import {
+  listenToAuthChanges,
+  registerResidentInFirebase,
+  loginResidentWithFirebase,
+  registerWorkerInFirebase,
+  loginWorkerWithFirebase,
+  signInWithGoogleFirebase,
+  signOutFromFirebase,
+  createBookingInFirestore,
+  updateBookingStatusInFirestore,
+  subscribeToAllBookings,
+  subscribeToWorkers,
+  updateWorkerInFirestore,
+  updateResidentInFirestore,
+  addWorkerJobToFirestore,
+  seedInitialWorkersToFirestore,
+} from '../firebase/services';
 
 interface AuthContextType {
   currentUser: AuthAccount | null;
   isAuthenticated: boolean;
+  authLoading: boolean;
   activeRole: UserRole;
   activeTab: AuthTab;
+  isFirebaseOnline: boolean;
   setActiveRole: (role: UserRole) => void;
   setActiveTab: (tab: AuthTab) => void;
   loginResident: (emailOrPhone: string, password?: string) => Promise<{ success: boolean; error?: string }>;
-  registerResident: (data: {
-    name: string;
-    email: string;
-    phone: string;
-    neighborhood: string;
-    apartment: string;
-    emergencyContact: string;
-    emergencyContactName?: string;
-  }) => Promise<{ success: boolean; error?: string }>;
+  registerResident: (
+    data: {
+      name: string;
+      email: string;
+      phone: string;
+      neighborhood: string;
+      apartment: string;
+      emergencyContact: string;
+      emergencyContactName?: string;
+    },
+    password?: string
+  ) => Promise<{ success: boolean; error?: string }>;
   loginWorker: (emailOrPhone: string, password?: string) => Promise<{ success: boolean; error?: string }>;
-  registerWorker: (data: {
-    name: string;
-    email: string;
-    phone: string;
-    serviceName: string;
-    serviceId: string;
-    hourlyRate: string;
-    experienceYears: string;
-    neighborhood: string;
-    aadhaarNumber?: string;
-    emergencyReady?: boolean;
-    bio?: string;
-  }) => Promise<{ success: boolean; error?: string; worker?: WorkerUser }>;
+  registerWorker: (
+    data: {
+      name: string;
+      email: string;
+      phone: string;
+      serviceName: string;
+      serviceId: string;
+      hourlyRate: string;
+      experienceYears: string;
+      neighborhood: string;
+      aadhaarNumber?: string;
+      emergencyReady?: boolean;
+      bio?: string;
+    },
+    password?: string
+  ) => Promise<{ success: boolean; error?: string; worker?: WorkerUser }>;
+  loginWithGoogle: (role?: UserRole) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   toggleWorkerAvailability: () => void;
   updateWorkerProfile: (updatedData: Partial<WorkerUser>) => void;
   updateResidentProfile: (updatedData: Partial<ResidentUser>) => void;
-  
-  // Booking History methods
+
+  // Bookings from Cloud Firestore
   bookings: BookingRecord[];
   addBooking: (booking: Omit<BookingRecord, 'id' | 'createdAt'>) => BookingRecord;
   cancelBooking: (bookingId: string) => void;
   updateBookingStatus: (bookingId: string, status: 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled') => void;
   getUserBookings: (userId?: string) => BookingRecord[];
 
-  // Registered Workers
+  // Registered Workers from Cloud Firestore
   workers: WorkerUser[];
 
-  // Worker Job Entries methods
+  // Worker Job Entries from Cloud Firestore
   workerJobs: Record<string, WorkerJobRecord[]>;
   addWorkerJob: (job: WorkerJobRecord) => void;
   getWorkerJobs: (workerId?: string) => WorkerJobRecord[];
@@ -71,7 +97,24 @@ const LOCAL_STORAGE_KEY_BOOKINGS = 'smart_neighborhood_bookings_v3';
 const LOCAL_STORAGE_KEY_WORKER_JOBS = 'smart_neighborhood_worker_jobs_v3';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. Registered Residents (starts empty or from localStorage)
+  const isFirebaseOnline = isFirebaseConfigured();
+
+  // 1. Current logged in user (driven by Firebase Auth + Firestore)
+  const [currentUser, setCurrentUser] = useState<AuthAccount | null>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY_AUTH_USER);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  });
+
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [activeRole, setActiveRole] = useState<UserRole>('user');
+  const [activeTab, setActiveTab] = useState<AuthTab>('login');
+
+  // 2. Registered Residents
   const [residents, setResidents] = useState<ResidentUser[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY_RESIDENTS);
@@ -82,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return [];
   });
 
-  // 2. Registered Workers (starts empty or from localStorage)
+  // 3. Registered Workers
   const [workers, setWorkers] = useState<WorkerUser[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY_WORKERS);
@@ -91,17 +134,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error(e);
     }
     return [];
-  });
-
-  // 3. Current logged in user
-  const [currentUser, setCurrentUser] = useState<AuthAccount | null>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY_AUTH_USER);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
   });
 
   // 4. Resident Bookings History
@@ -126,10 +158,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return {};
   });
 
-  const [activeRole, setActiveRole] = useState<UserRole>('user');
-  const [activeTab, setActiveTab] = useState<AuthTab>('login');
+  // 1. ATTACH FIREBASE AUTH LISTENER & INITIAL SEEDING
+  useEffect(() => {
+    // Seed initial pros into Firestore if empty
+    seedInitialWorkersToFirestore();
 
-  // Persistence effects
+    const unsubscribeAuth = listenToAuthChanges((resolvedUser) => {
+      if (resolvedUser) {
+        setCurrentUser(resolvedUser);
+        setActiveRole(resolvedUser.role);
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY_AUTH_USER, JSON.stringify(resolvedUser));
+        } catch {}
+      } else {
+        setCurrentUser(null);
+        try {
+          localStorage.removeItem(LOCAL_STORAGE_KEY_AUTH_USER);
+        } catch {}
+      }
+      setAuthLoading(false);
+    });
+
+    return () => {
+      unsubscribeAuth();
+    };
+  }, []);
+
+  // 2. ATTACH FIRESTORE REALTIME SYNC (Workers & Bookings)
+  useEffect(() => {
+    // Realtime Worker Pro Updates from Cloud Firestore
+    const unsubWorkers = subscribeToWorkers((liveWorkers) => {
+      setWorkers((prev) => {
+        const merged = [...liveWorkers];
+        prev.forEach((p) => {
+          if (!merged.some((m) => m.id === p.id || m.email === p.email)) {
+            merged.push(p);
+          }
+        });
+        return merged;
+      });
+    });
+
+    // Realtime Bookings Sync across residents & pros from Cloud Firestore
+    const unsubBookings = subscribeToAllBookings((liveBookings) => {
+      setBookings(liveBookings);
+    });
+
+    return () => {
+      if (unsubWorkers) unsubWorkers();
+      if (unsubBookings) unsubBookings();
+    };
+  }, []);
+
+  // Local Storage Backups
   useEffect(() => {
     try {
       if (currentUser) {
@@ -174,167 +255,141 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [workerJobs]);
 
-  // Login Resident
+  // LOGIN RESIDENT
   const loginResident = async (
     emailOrPhone: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _password?: string
+    password?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    const cleanQuery = emailOrPhone.trim().toLowerCase();
-    const cleanDigits = emailOrPhone.replace(/\D/g, '');
-
+    const cleanQuery = emailOrPhone.trim();
     if (!cleanQuery) {
       return { success: false, error: 'Please enter your registered email or phone number.' };
     }
 
-    const found = residents.find(
-      (r) =>
-        r.email.toLowerCase() === cleanQuery ||
-        (cleanDigits.length >= 6 && r.phone.replace(/\D/g, '').includes(cleanDigits))
-    );
-
-    if (found) {
-      setCurrentUser(found);
+    const res = await loginResidentWithFirebase(cleanQuery, password);
+    if (res.success && res.resident) {
+      setCurrentUser(res.resident);
+      setActiveRole('user');
       return { success: true };
     }
 
     return {
       success: false,
-      error: 'No resident account found with these credentials. Please register first.',
+      error: res.error || 'No resident account found with these credentials on Firebase Auth.',
     };
   };
 
-  // Register Resident
-  const registerResident = async (data: {
-    name: string;
-    email: string;
-    phone: string;
-    neighborhood: string;
-    apartment: string;
-    emergencyContact: string;
-    emergencyContactName?: string;
-  }): Promise<{ success: boolean; error?: string }> => {
+  // REGISTER RESIDENT
+  const registerResident = async (
+    data: {
+      name: string;
+      email: string;
+      phone: string;
+      neighborhood: string;
+      apartment: string;
+      emergencyContact: string;
+      emergencyContactName?: string;
+    },
+    password?: string
+  ): Promise<{ success: boolean; error?: string }> => {
     if (!data.name.trim() || !data.email.trim() || !data.phone.trim()) {
       return { success: false, error: 'Please fill in all mandatory fields.' };
     }
 
-    // Check if email already registered
-    const existing = residents.find((r) => r.email.toLowerCase() === data.email.trim().toLowerCase());
-    if (existing) {
-      setCurrentUser(existing);
+    const res = await registerResidentInFirebase(data, password);
+    if (res.success && res.resident) {
+      setCurrentUser(res.resident);
+      setActiveRole('user');
+      setResidents((prev) => [res.resident!, ...prev.filter((r) => r.id !== res.resident!.id)]);
       return { success: true };
     }
 
-    const newResident: ResidentUser = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
-      phone: data.phone.trim(),
-      avatar: `https://images.unsplash.com/photo-${1534528741775 + (residents.length % 7)}?w=150&auto=format&fit=crop&q=80`,
-      neighborhood: data.neighborhood || 'Indiranagar / 100ft Road',
-      apartment: data.apartment || 'Neighborhood Residence',
-      emergencyContact: data.emergencyContact || '+91 98450 99881',
-      emergencyContactName: data.emergencyContactName || 'Emergency Kin',
-      joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-    };
-
-    setResidents((prev) => [newResident, ...prev]);
-    setCurrentUser(newResident);
-    return { success: true };
+    return { success: false, error: res.error || 'Failed to create resident account in Firebase Auth.' };
   };
 
-  // Login Worker
+  // LOGIN WORKER
   const loginWorker = async (
     emailOrPhone: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _password?: string
+    password?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    const cleanQuery = emailOrPhone.trim().toLowerCase();
-    const cleanDigits = emailOrPhone.replace(/\D/g, '');
-
+    const cleanQuery = emailOrPhone.trim();
     if (!cleanQuery) {
       return { success: false, error: 'Please enter your Worker ID, email, or phone number.' };
     }
 
-    const found = workers.find(
-      (w) =>
-        w.email.toLowerCase() === cleanQuery ||
-        w.id.toLowerCase() === cleanQuery ||
-        (cleanDigits.length >= 6 && w.phone.replace(/\D/g, '').includes(cleanDigits))
-    );
-
-    if (found) {
-      setCurrentUser(found);
+    const res = await loginWorkerWithFirebase(cleanQuery, password);
+    if (res.success && res.worker) {
+      setCurrentUser(res.worker);
+      setActiveRole('worker');
       return { success: true };
     }
 
     return {
       success: false,
-      error: 'No worker profile found with these credentials. Please register as a Pro first.',
+      error: res.error || 'No professional account found on Firebase Auth with these credentials.',
     };
   };
 
-  // Register Worker
-  const registerWorker = async (data: {
-    name: string;
-    email: string;
-    phone: string;
-    serviceName: string;
-    serviceId: string;
-    hourlyRate: string;
-    experienceYears: string;
-    neighborhood: string;
-    aadhaarNumber?: string;
-    emergencyReady?: boolean;
-    bio?: string;
-  }): Promise<{ success: boolean; error?: string; worker?: WorkerUser }> => {
+  // REGISTER WORKER
+  const registerWorker = async (
+    data: {
+      name: string;
+      email: string;
+      phone: string;
+      serviceName: string;
+      serviceId: string;
+      hourlyRate: string;
+      experienceYears: string;
+      neighborhood: string;
+      aadhaarNumber?: string;
+      emergencyReady?: boolean;
+      bio?: string;
+    },
+    password?: string
+  ): Promise<{ success: boolean; error?: string; worker?: WorkerUser }> => {
     if (!data.name.trim() || !data.email.trim() || !data.phone.trim() || !data.serviceName.trim()) {
       return { success: false, error: 'Please fill in all mandatory worker registration fields.' };
     }
 
-    const rate = formatINR(data.hourlyRate || '249');
+    const res = await registerWorkerInFirebase(data, password);
+    if (res.success && res.worker) {
+      setCurrentUser(res.worker);
+      setActiveRole('worker');
+      setWorkers((prev) => [res.worker!, ...prev.filter((w) => w.id !== res.worker!.id)]);
+      return { success: true, worker: res.worker };
+    }
 
-    const newWorker: WorkerUser = {
-      id: `pro-${Date.now()}`,
-      role: 'worker',
-      name: data.name.trim(),
-      email: data.email.trim().toLowerCase(),
-      phone: data.phone.trim(),
-      avatar: `https://images.unsplash.com/photo-${1500648767791 + (workers.length % 7)}?w=150&auto=format&fit=crop&q=80`,
-      serviceName: data.serviceName.trim(),
-      serviceId: data.serviceId || 'electrician',
-      hourlyRate: rate,
-      experienceYears: data.experienceYears || '3+ Years',
-      neighborhood: data.neighborhood || 'Indiranagar / 100ft Road',
-      aadhaarNumber: data.aadhaarNumber || 'XXXX-XXXX-9912',
-      aadhaarVerified: true,
-      policeVerified: true,
-      emergencyReady: data.emergencyReady ?? true,
-      bio: data.bio || `Certified specialist in ${data.serviceName} with doorstep neighborhood assistance.`,
-      rating: 5.0,
-      reviewsCount: 0,
-      joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-      isAvailableNow: true,
-    };
-
-    setWorkers((prev) => [newWorker, ...prev.filter((w) => w.email !== newWorker.email)]);
-    setCurrentUser(newWorker);
-    return { success: true, worker: newWorker };
+    return { success: false, error: res.error || 'Worker registration failed in Firebase Auth.' };
   };
 
-  // Toggle availability
+  // GOOGLE SIGN-IN
+  const loginWithGoogle = async (
+    role: UserRole = activeRole
+  ): Promise<{ success: boolean; error?: string }> => {
+    const res = await signInWithGoogleFirebase(role);
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setActiveRole(res.user.role);
+      return { success: true };
+    }
+    return { success: false, error: res.error || 'Google authentication failed.' };
+  };
+
+  // TOGGLE WORKER AVAILABILITY
   const toggleWorkerAvailability = () => {
     if (!currentUser || currentUser.role !== 'worker') return;
+    const newStatus = !currentUser.isAvailableNow;
     const updated: WorkerUser = {
       ...currentUser,
-      isAvailableNow: !currentUser.isAvailableNow,
+      isAvailableNow: newStatus,
     };
     setCurrentUser(updated);
     setWorkers((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
+
+    // Persist directly to Cloud Firestore
+    updateWorkerInFirestore(updated.id, { isAvailableNow: newStatus });
   };
 
-  // Update Worker Profile
+  // UPDATE WORKER PROFILE
   const updateWorkerProfile = (updatedData: Partial<WorkerUser>) => {
     if (!currentUser || currentUser.role !== 'worker') return;
     const updated: WorkerUser = {
@@ -343,9 +398,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setCurrentUser(updated);
     setWorkers((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
+
+    // Persist directly to Cloud Firestore
+    updateWorkerInFirestore(updated.id, updatedData);
   };
 
-  // Update Resident Profile
+  // UPDATE RESIDENT PROFILE
   const updateResidentProfile = (updatedData: Partial<ResidentUser>) => {
     if (!currentUser || currentUser.role !== 'user') return;
     const updated: ResidentUser = {
@@ -354,15 +412,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setCurrentUser(updated);
     setResidents((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+
+    // Persist directly to Cloud Firestore
+    updateResidentInFirestore(updated.id, updatedData);
   };
 
-  // Logout
+  // LOGOUT
   const logout = () => {
+    signOutFromFirebase();
     setCurrentUser(null);
     setActiveTab('login');
   };
 
-  // Add Booking to history
+  // ADD BOOKING
   const addBooking = (bookingData: Omit<BookingRecord, 'id' | 'createdAt'>): BookingRecord => {
     const newBooking: BookingRecord = {
       ...bookingData,
@@ -371,17 +433,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     setBookings((prev) => [newBooking, ...prev]);
+
+    // Save directly to Cloud Firestore Database
+    createBookingInFirestore(newBooking);
+
     return newBooking;
   };
 
-  // Cancel Booking
+  // CANCEL BOOKING
   const cancelBooking = (bookingId: string) => {
     setBookings((prev) =>
       prev.map((b) => (b.id === bookingId ? { ...b, status: 'Cancelled' as const } : b))
     );
+
+    // Update in Cloud Firestore Database
+    updateBookingStatusInFirestore(bookingId, 'Cancelled');
   };
 
-  // Update Booking Status
+  // UPDATE BOOKING STATUS
   const updateBookingStatus = (
     bookingId: string,
     status: 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled'
@@ -389,16 +458,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setBookings((prev) =>
       prev.map((b) => (b.id === bookingId ? { ...b, status } : b))
     );
+
+    // Update in Cloud Firestore Database
+    updateBookingStatusInFirestore(bookingId, status);
   };
 
-  // Get User Bookings
+  // GET USER BOOKINGS
   const getUserBookings = (userId?: string): BookingRecord[] => {
     const targetId = userId || currentUser?.id;
     if (!targetId) return bookings;
     return bookings.filter((b) => b.userId === targetId);
   };
 
-  // Add Worker Completed Job to their profile
+  // ADD WORKER COMPLETED JOB
   const addWorkerJob = (job: WorkerJobRecord) => {
     setWorkerJobs((prev) => {
       const existing = prev[job.workerId] || [];
@@ -407,9 +479,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         [job.workerId]: [job, ...existing],
       };
     });
+
+    // Save directly to Cloud Firestore Database
+    addWorkerJobToFirestore(job);
   };
 
-  // Get Worker Jobs
+  // GET WORKER JOBS
   const getWorkerJobs = (workerId?: string): WorkerJobRecord[] => {
     const targetId = workerId || currentUser?.id;
     if (!targetId) return [];
@@ -423,14 +498,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         currentUser,
         isAuthenticated,
+        authLoading,
         activeRole,
         activeTab,
+        isFirebaseOnline,
         setActiveRole,
         setActiveTab,
         loginResident,
         registerResident,
         loginWorker,
         registerWorker,
+        loginWithGoogle,
         logout,
         toggleWorkerAvailability,
         updateWorkerProfile,

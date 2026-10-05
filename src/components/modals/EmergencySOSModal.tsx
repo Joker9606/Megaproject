@@ -7,6 +7,7 @@ import { ResidentUser } from '../../types/auth';
 import { VerifiedPro } from '../../types';
 import confetti from 'canvas-confetti';
 import { formatINR } from '../../utils/formatCurrency';
+import { broadcastEmergencyAlert } from '../../firebase/services';
 
 interface EmergencySOSModalProps {
   isOpen: boolean;
@@ -76,6 +77,18 @@ export function EmergencySOSModal({ isOpen, onClose }: EmergencySOSModalProps) {
             taskDetails: `Urgent Emergency Callout: ${selectedOption.name}`,
             status: 'Confirmed',
             otp,
+          });
+
+          // Broadcast emergency alert to Cloud Firestore
+          broadcastEmergencyAlert({
+            id: `sos-${Date.now()}`,
+            senderName: resident?.name || 'Local Resident',
+            senderPhone: resident?.phone || '+91 98450 00000',
+            address: address.trim(),
+            emergencyType: selectedOption.name,
+            notes: `Urgent Emergency Callout dispatched to ${matched.name}`,
+            status: 'ACTIVE',
+            createdAt: new Date().toISOString(),
           });
 
           setStep('matched');

@@ -300,7 +300,25 @@ function MainLayout() {
 }
 
 function AppContent() {
-  const { isAuthenticated, currentUser } = useAuth();
+  const { isAuthenticated, currentUser, authLoading } = useAuth();
+
+  // Show sleek loader while Firebase Auth resolves session from Cloud
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-navy-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-emerald-400 p-[2px] shadow-glow-cyan mb-4 animate-pulse">
+          <div className="w-full h-full bg-navy-950 rounded-2xl flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+          </div>
+        </div>
+        <p className="text-sm font-bold text-white tracking-wide">Smart Neighborhood Network</p>
+        <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          Connecting to Firebase Cloud...
+        </p>
+      </div>
+    );
+  }
 
   // 1. If not authenticated at all, show the clean Auth Gateway
   if (!isAuthenticated || !currentUser) {

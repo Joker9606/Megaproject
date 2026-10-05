@@ -506,8 +506,7 @@ export function WorkerDashboard() {
                 {jobStep === 2 && (
                   <form onSubmit={handleVerifyOtp} className="space-y-3">
                     <p className="text-xs text-slate-300">
-                      Ask customer for their 4-digit service start PIN (OTP is{' '}
-                      <span className="font-bold text-amber-400">{activeJob.otp}</span>):
+                      Ask customer for their 4-digit service start PIN to begin the job:
                     </p>
                     <div className="flex gap-2">
                       <input

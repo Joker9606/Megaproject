@@ -15,6 +15,7 @@ import {
   AlertCircle,
   CheckCircle2,
   HeartHandshake,
+  Flame,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import confetti from 'canvas-confetti';
@@ -37,7 +38,7 @@ const NEIGHBORHOOD_OPTIONS = [
 ];
 
 export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
-  const { activeTab, setActiveTab, loginResident, registerResident } = useAuth();
+  const { activeTab, setActiveTab, loginResident, registerResident, loginWithGoogle, isFirebaseOnline } = useAuth();
 
   // Login Form States
   const [loginEmailOrPhone, setLoginEmailOrPhone] = useState('');
@@ -60,6 +61,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
 
   // Status & Error States
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -130,15 +132,18 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
 
     setLoading(true);
     try {
-      const res = await registerResident({
-        name: regName,
-        email: regEmail,
-        phone: regPhone,
-        neighborhood: regNeighborhood,
-        apartment: regApartment,
-        emergencyContact: regEmergencyContact,
-        emergencyContactName: regEmergencyName,
-      });
+      const res = await registerResident(
+        {
+          name: regName,
+          email: regEmail,
+          phone: regPhone,
+          neighborhood: regNeighborhood,
+          apartment: regApartment,
+          emergencyContact: regEmergencyContact,
+          emergencyContactName: regEmergencyName,
+        },
+        regPassword
+      );
 
       if (res.success) {
         triggerConfetti();
@@ -150,29 +155,70 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
         setErrorMessage(res.error || 'Failed to create resident account.');
       }
     } catch {
-      setErrorMessage('An error occurred during registration.');
+      setErrorMessage('An unexpected error occurred during registration.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Handle Google Auth
+  const handleGoogleAuth = async () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setGoogleLoading(true);
+
+    try {
+      const res = await loginWithGoogle('user');
+      if (res.success) {
+        triggerConfetti();
+        setSuccessMessage('Authenticated with Google successfully!');
+        setTimeout(() => {
+          if (onSuccess) onSuccess();
+        }, 500);
+      } else {
+        setErrorMessage(res.error || 'Google sign-in could not be completed.');
+      }
+    } catch {
+      setErrorMessage('Google authentication encountered an error.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="w-full">
-      {/* Tab Selector */}
-      <div className="flex bg-navy-900/90 p-1.5 rounded-2xl border border-cyan-500/20 mb-6 backdrop-blur-md">
+      {/* Firebase Status Pill */}
+      <div className="flex items-center justify-center mb-4">
+        <div
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border ${
+            isFirebaseOnline
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              : 'bg-slate-800/80 border-slate-700 text-slate-400'
+          }`}
+        >
+          <Flame className={`w-3.5 h-3.5 ${isFirebaseOnline ? 'text-amber-400 animate-pulse' : 'text-slate-500'}`} />
+          <span>
+            {isFirebaseOnline ? 'Connected to Firebase Auth & Cloud Firestore' : 'Firebase Ready (.env configurable)'}
+          </span>
+        </div>
+      </div>
+
+      {/* Mode Sub-tabs (Sign In / Sign Up) */}
+      <div className="grid grid-cols-2 p-1 bg-navy-950/70 border border-slate-700/60 rounded-xl mb-5">
         <button
           type="button"
           onClick={() => {
             setActiveTab('login');
             setErrorMessage(null);
+            setSuccessMessage(null);
           }}
-          className={`flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+          className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
             activeTab === 'login'
-              ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-glow-cyan'
+              ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 shadow-sm'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <User className="w-4 h-4" />
+          <Lock className="w-3.5 h-3.5" />
           <span>Resident Sign In</span>
         </button>
 
@@ -181,14 +227,15 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           onClick={() => {
             setActiveTab('register');
             setErrorMessage(null);
+            setSuccessMessage(null);
           }}
-          className={`flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+          className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
             activeTab === 'register'
-              ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-glow-emerald'
+              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 shadow-sm'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-3.5 h-3.5" />
           <span>New Resident Sign Up</span>
         </button>
       </div>
@@ -219,6 +266,53 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Quick Google Sign In Button */}
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={handleGoogleAuth}
+          disabled={googleLoading}
+          className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-300 flex items-center justify-center gap-2.5 transition shadow-sm hover:shadow active:scale-[0.99] disabled:opacity-60"
+        >
+          {googleLoading ? (
+            <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
+          ) : (
+            <>
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Continue with Google</span>
+            </>
+          )}
+        </button>
+
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-700/80"></div>
+          </div>
+          <div className="relative flex justify-center text-[10px] uppercase">
+            <span className="bg-navy-950 px-2 text-slate-400 font-bold tracking-wider">
+              Or with Email / Phone
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* LOGIN TAB */}
       {activeTab === 'login' && (
@@ -348,37 +442,37 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                 Full Name <span className="text-red-400">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <User className="w-3.5 h-3.5" />
                 </div>
                 <input
                   type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
-                  placeholder="e.g. Sanya Iyer"
+                  placeholder="e.g. Priya Sundaram"
                   required
-                  className="w-full pl-10 pr-4 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 transition outline-none"
+                  className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 outline-none"
                 />
               </div>
             </div>
 
-            {/* Email & Phone Grid */}
+            {/* Email & Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Email Address <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Mail className="w-4 h-4" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Mail className="w-3.5 h-3.5" />
                   </div>
                   <input
                     type="email"
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="sanya@gmail.com"
+                    placeholder="priya@example.com"
                     required
-                    className="w-full pl-10 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 transition outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
                   />
                 </div>
               </div>
@@ -388,99 +482,100 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   Mobile Number <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Phone className="w-4 h-4" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Phone className="w-3.5 h-3.5" />
                   </div>
                   <input
                     type="tel"
                     value={regPhone}
                     onChange={(e) => setRegPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 98450 12345"
                     required
-                    className="w-full pl-10 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 transition outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Neighborhood Locality Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Neighborhood Locality <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <MapPin className="w-4 h-4 text-emerald-400" />
+            {/* Neighborhood & Apartment */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Neighborhood Sector <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <MapPin className="w-3.5 h-3.5" />
+                  </div>
+                  <select
+                    value={regNeighborhood}
+                    onChange={(e) => setRegNeighborhood(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs outline-none"
+                  >
+                    {NEIGHBORHOOD_OPTIONS.map((n) => (
+                      <option key={n} value={n} className="bg-navy-900 text-slate-100">
+                        {n}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={regNeighborhood}
-                  onChange={(e) => setRegNeighborhood(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl text-slate-100 text-xs sm:text-sm transition outline-none cursor-pointer"
-                >
-                  {NEIGHBORHOOD_OPTIONS.map((loc) => (
-                    <option key={loc} value={loc} className="bg-navy-950 text-slate-100">
-                      {loc}
-                    </option>
-                  ))}
-                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Flat / House / Villa No.
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Home className="w-3.5 h-3.5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={regApartment}
+                    onChange={(e) => setRegApartment(e.target.value)}
+                    placeholder="e.g. Flat 302, Palm Heights"
+                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Apartment / Society */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Society / Apartment / House No.
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Home className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  value={regApartment}
-                  onChange={(e) => setRegApartment(e.target.value)}
-                  placeholder="e.g. Tower B, Flat 304, Prestige Ozone"
-                  className="w-full pl-10 pr-4 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 transition outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Emergency SOS Contact */}
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-emerald-500/30 space-y-2">
-              <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
-                <HeartHandshake className="w-3.5 h-3.5" />
-                <span>Emergency Kin Contact (Optional)</span>
+            {/* Emergency Contact */}
+            <div className="p-3 bg-red-950/20 border border-red-500/30 rounded-xl">
+              <div className="flex items-center gap-1.5 mb-2">
+                <HeartHandshake className="w-3.5 h-3.5 text-red-400" />
+                <span className="text-xs font-bold text-red-300">Neighborhood SOS Emergency Kin</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input
                   type="text"
                   value={regEmergencyName}
                   onChange={(e) => setRegEmergencyName(e.target.value)}
-                  placeholder="Contact Name / Relation"
-                  className="w-full px-3 py-1.5 bg-navy-950 border border-slate-700 rounded-lg text-xs text-slate-200 placeholder-slate-500 outline-none"
+                  placeholder="Kin Name (e.g. Spouse / Brother)"
+                  className="w-full px-3 py-1.5 bg-navy-900/90 border border-slate-700/80 focus:border-red-400 rounded-lg text-slate-100 text-xs placeholder-slate-500 outline-none"
                 />
                 <input
                   type="tel"
                   value={regEmergencyContact}
                   onChange={(e) => setRegEmergencyContact(e.target.value)}
-                  placeholder="Emergency Phone Number"
-                  className="w-full px-3 py-1.5 bg-navy-950 border border-slate-700 rounded-lg text-xs text-slate-200 placeholder-slate-500 outline-none"
+                  placeholder="Kin Phone: +91 98450 XXXXX"
+                  className="w-full px-3 py-1.5 bg-navy-900/90 border border-slate-700/80 focus:border-red-400 rounded-lg text-slate-100 text-xs placeholder-slate-500 outline-none"
                 />
               </div>
             </div>
 
-            {/* Passwords */}
+            {/* Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Password <span className="text-red-400">*</span>
+                  Create Password <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <input
                     type={showRegPassword ? 'text' : 'password'}
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
-                    placeholder="Create password"
+                    placeholder="Min 6 characters"
                     required
                     className="w-full px-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
                   />

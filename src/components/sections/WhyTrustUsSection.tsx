@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, MapPin, Lock, Star, CheckCircle2, Shield } from 'lucide-react';
 import { TiltCard3D } from '../common/TiltCard3D';
-import { TESTIMONIALS } from '../../data/mockData';
 
 export function WhyTrustUsSection() {
   const pillars = [
@@ -130,56 +129,6 @@ export function WhyTrustUsSection() {
               </motion.div>
             );
           })}
-        </div>
-
-        {/* Real Verified Neighbor Testimonials */}
-        <div className="mt-20 pt-16 border-t border-slate-800/80">
-          <div className="text-center mb-10">
-            <h3 className="text-2xl font-bold text-white">What Neighbors Are Saying</h3>
-            <p className="text-xs text-slate-400 mt-1">Verified reviews from verified booking completions</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, idx) => (
-              <motion.div
-                key={t.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.15 }}
-                className="h-full"
-              >
-                <TiltCard3D tiltMaxAngle={8} glareOpacity={0.2}>
-                  <div className="glass-card rounded-3xl p-6 border border-slate-800 hover:border-cyan-500/40 flex flex-col justify-between h-full bg-gradient-to-b from-navy-900/80 to-navy-950/90 text-left">
-                    <div>
-                      <div className="flex items-center gap-1 text-amber-400 mb-3">
-                        {[...Array(t.rating)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-amber-400" />
-                        ))}
-                      </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed italic">
-                        "{t.content}"
-                      </p>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-slate-800 flex items-center gap-3">
-                      <img
-                        src={t.avatar}
-                        alt={t.author}
-                        className="w-10 h-10 rounded-full object-cover border border-cyan-400/50"
-                      />
-                      <div>
-                        <div className="text-xs font-bold text-white">{t.author}</div>
-                        <div className="text-[10px] text-cyan-400 font-semibold">{t.service}</div>
-                        <div className="text-[9px] text-slate-500">{t.neighborhood} • {t.date}</div>
-                      </div>
-                    </div>
-                  </div>
-                </TiltCard3D>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
       </div>

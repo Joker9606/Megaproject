@@ -71,7 +71,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
         particleCount: 60,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#00F0FF', '#10B981', '#3B82F6', '#F59E0B'],
+        colors: ['#2563EB', '#10B981', '#3B82F6', '#F59E0B'],
       });
     } catch {
       // ignore
@@ -160,19 +160,18 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
     }
   };
 
-
   return (
     <div className="w-full">
       {/* Firebase Status Pill */}
-      <div className="flex items-center justify-center mb-4">
+      <div className="flex items-center justify-center mb-5">
         <div
           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border ${
             isFirebaseOnline
-              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-              : 'bg-slate-800/80 border-slate-700 text-slate-400'
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-slate-100 border-slate-200 text-slate-600'
           }`}
         >
-          <Flame className={`w-3.5 h-3.5 ${isFirebaseOnline ? 'text-amber-400 animate-pulse' : 'text-slate-500'}`} />
+          <Flame className={`w-3.5 h-3.5 ${isFirebaseOnline ? 'text-amber-600 animate-pulse' : 'text-slate-400'}`} />
           <span>
             {isFirebaseOnline ? 'Connected to Firebase Auth & Cloud Firestore' : 'Firebase Ready (.env configurable)'}
           </span>
@@ -180,7 +179,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
       </div>
 
       {/* Mode Sub-tabs (Sign In / Sign Up) */}
-      <div className="grid grid-cols-2 p-1 bg-navy-950/70 border border-slate-700/60 rounded-xl mb-5">
+      <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-6">
         <button
           type="button"
           onClick={() => {
@@ -190,8 +189,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           }}
           className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
             activeTab === 'login'
-              ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Lock className="w-3.5 h-3.5" />
@@ -207,8 +206,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           }}
           className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
             activeTab === 'register'
-              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 shadow-sm'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-white text-emerald-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -223,9 +222,9 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-5 p-3.5 rounded-xl bg-red-500/15 border border-red-500/40 text-red-300 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5"
           >
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </motion.div>
         )}
@@ -235,14 +234,13 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-5 p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs flex items-start gap-2.5"
+            className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-start gap-2.5"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <span>{successMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
-
 
       {/* LOGIN TAB */}
       {activeTab === 'login' && (
@@ -256,7 +254,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           <form onSubmit={handleLoginSubmit} className="space-y-4 text-left">
             {/* Email / Phone */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Email Address or Mobile Number
               </label>
               <div className="relative">
@@ -269,7 +267,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   onChange={(e) => setLoginEmailOrPhone(e.target.value)}
                   placeholder="name@gmail.com or 9845012345"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-navy-900/90 border border-slate-700/80 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 rounded-xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 transition outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-slate-900 text-xs sm:text-sm placeholder-slate-400 transition outline-none"
                 />
               </div>
             </div>
@@ -277,11 +275,11 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-slate-300">Password</label>
+                <label className="text-xs font-semibold text-slate-700">Password</label>
                 <button
                   type="button"
                   onClick={() => alert('Password reset link has been dispatched to your email/mobile.')}
-                  className="text-[11px] text-cyan-400 hover:underline"
+                  className="text-[11px] text-blue-600 hover:underline font-semibold"
                 >
                   Forgot password?
                 </button>
@@ -296,12 +294,12 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-10 pr-10 py-2.5 bg-navy-900/90 border border-slate-700/80 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 rounded-xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 transition outline-none"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-slate-900 text-xs sm:text-sm placeholder-slate-400 transition outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
                 >
                   {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -315,12 +313,12 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-700 bg-navy-900 text-cyan-500 focus:ring-cyan-400 accent-cyan-500"
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
                 />
-                <span className="text-xs text-slate-300">Remember me</span>
+                <span className="text-xs text-slate-600">Remember me</span>
               </label>
 
-              <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
+              <span className="text-[11px] text-emerald-600 flex items-center gap-1 font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" /> 256-Bit SSL Secured
               </span>
             </div>
@@ -329,7 +327,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-glow-cyan transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -343,12 +341,12 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           </form>
 
           {/* Toggle link */}
-          <div className="mt-5 text-center text-xs text-slate-400">
+          <div className="mt-5 text-center text-xs text-slate-500">
             Don't have a resident account?{' '}
             <button
               type="button"
               onClick={() => setActiveTab('register')}
-              className="font-bold text-cyan-400 hover:underline"
+              className="font-bold text-blue-600 hover:underline"
             >
               Sign up now
             </button>
@@ -368,8 +366,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           <form onSubmit={handleRegisterSubmit} className="space-y-3.5 text-left">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Full Name <span className="text-red-400">*</span>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Full Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -381,7 +379,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   onChange={(e) => setRegName(e.target.value)}
                   placeholder="e.g. Priya Sundaram"
                   required
-                  className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs sm:text-sm placeholder-slate-500 outline-none"
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs sm:text-sm placeholder-slate-400 outline-none"
                 />
               </div>
             </div>
@@ -389,8 +387,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             {/* Email & Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Email Address <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Email Address <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -402,14 +400,14 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                     onChange={(e) => setRegEmail(e.target.value)}
                     placeholder="priya@example.com"
                     required
-                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Mobile Number <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Mobile Number <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -421,7 +419,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                     onChange={(e) => setRegPhone(e.target.value)}
                     placeholder="+91 98450 12345"
                     required
-                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                   />
                 </div>
               </div>
@@ -430,8 +428,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             {/* Neighborhood & Apartment */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Neighborhood Sector <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Neighborhood Sector <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -440,10 +438,10 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   <select
                     value={regNeighborhood}
                     onChange={(e) => setRegNeighborhood(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs outline-none cursor-pointer"
                   >
                     {NEIGHBORHOOD_OPTIONS.map((n) => (
-                      <option key={n} value={n} className="bg-navy-900 text-slate-100">
+                      <option key={n} value={n}>
                         {n}
                       </option>
                     ))}
@@ -452,7 +450,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Flat / House / Villa No.
                 </label>
                 <div className="relative">
@@ -464,17 +462,17 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                     value={regApartment}
                     onChange={(e) => setRegApartment(e.target.value)}
                     placeholder="e.g. Flat 302, Palm Heights"
-                    className="w-full pl-9 pr-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Emergency Contact */}
-            <div className="p-3 bg-red-950/20 border border-red-500/30 rounded-xl">
+            <div className="p-3 bg-red-50/70 border border-red-200 rounded-xl">
               <div className="flex items-center gap-1.5 mb-2">
-                <HeartHandshake className="w-3.5 h-3.5 text-red-400" />
-                <span className="text-xs font-bold text-red-300">Neighborhood SOS Emergency Kin</span>
+                <HeartHandshake className="w-3.5 h-3.5 text-red-600" />
+                <span className="text-xs font-bold text-red-700">Neighborhood SOS Emergency Kin</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <input
@@ -482,14 +480,14 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   value={regEmergencyName}
                   onChange={(e) => setRegEmergencyName(e.target.value)}
                   placeholder="Kin Name (e.g. Spouse / Brother)"
-                  className="w-full px-3 py-1.5 bg-navy-900/90 border border-slate-700/80 focus:border-red-400 rounded-lg text-slate-100 text-xs placeholder-slate-500 outline-none"
+                  className="w-full px-3 py-1.5 bg-white border border-red-200 focus:border-red-500 rounded-lg text-slate-900 text-xs placeholder-slate-400 outline-none"
                 />
                 <input
                   type="tel"
                   value={regEmergencyContact}
                   onChange={(e) => setRegEmergencyContact(e.target.value)}
                   placeholder="Kin Phone: +91 98450 XXXXX"
-                  className="w-full px-3 py-1.5 bg-navy-900/90 border border-slate-700/80 focus:border-red-400 rounded-lg text-slate-100 text-xs placeholder-slate-500 outline-none"
+                  className="w-full px-3 py-1.5 bg-white border border-red-200 focus:border-red-500 rounded-lg text-slate-900 text-xs placeholder-slate-400 outline-none"
                 />
               </div>
             </div>
@@ -497,8 +495,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             {/* Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Create Password <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Create Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -507,12 +505,12 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="Min 6 characters"
                     required
-                    className="w-full px-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowRegPassword(!showRegPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
                   >
                     {showRegPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
@@ -520,8 +518,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Confirm Password <span className="text-red-400">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Confirm Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   type={showRegPassword ? 'text' : 'password'}
@@ -529,7 +527,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
                   placeholder="Re-enter password"
                   required
-                  className="w-full px-3 py-2 bg-navy-900/90 border border-slate-700/80 focus:border-emerald-400 rounded-xl text-slate-100 text-xs placeholder-slate-500 outline-none"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                 />
               </div>
             </div>
@@ -540,9 +538,9 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="w-4 h-4 mt-0.5 rounded border-slate-700 bg-navy-900 text-emerald-500 focus:ring-emerald-400 accent-emerald-500"
+                className="w-4 h-4 mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
               />
-              <span className="text-[11px] text-slate-300">
+              <span className="text-[11px] text-slate-600">
                 I agree to the Neighborhood Safety Charter and acknowledge terms.
               </span>
             </label>
@@ -551,7 +549,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm shadow-glow-emerald transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -565,12 +563,12 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           </form>
 
           {/* Toggle link */}
-          <div className="mt-4 text-center text-xs text-slate-400">
+          <div className="mt-4 text-center text-xs text-slate-500">
             Already have an account?{' '}
             <button
               type="button"
               onClick={() => setActiveTab('login')}
-              className="font-bold text-emerald-400 hover:underline"
+              className="font-bold text-emerald-600 hover:underline"
             >
               Sign In
             </button>

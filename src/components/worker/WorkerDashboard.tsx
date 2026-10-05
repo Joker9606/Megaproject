@@ -243,7 +243,7 @@ export function WorkerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-navy-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-amber-500 selection:text-white">
       {/* Worker Operations Navigation */}
       <WorkerNavbar
         activeTab={activeTab}
@@ -254,25 +254,25 @@ export function WorkerDashboard() {
       {/* Main Workspace Container */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex-1">
         {/* Top Summary Banner */}
-        <div className="mb-6 p-5 rounded-3xl bg-gradient-to-r from-amber-950/50 via-navy-900 to-navy-950 border border-amber-500/30 shadow-2xl relative overflow-hidden">
+        <div className="mb-6 p-6 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <img
                 src={worker?.avatar}
                 alt={worker?.name}
-                className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400 shadow-glow-amber"
+                className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-500 shadow-sm"
               />
               <div className="text-left">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-extrabold text-white">{worker?.name}</h1>
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold">
+                  <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">{worker?.name}</h1>
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold">
                     Verified Professional
                   </span>
                 </div>
-                <p className="text-xs text-amber-400 font-semibold mt-0.5">
+                <p className="text-xs text-amber-700 font-semibold mt-0.5">
                   {worker?.serviceName} • {worker?.neighborhood}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 mt-1">
                   Radar active: Scanning neighborhood for incoming customer bookings
                 </p>
               </div>
@@ -280,21 +280,21 @@ export function WorkerDashboard() {
 
             {/* Quick Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto">
-              <div className="p-3 rounded-2xl bg-navy-950/80 border border-slate-800 text-center">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Live Leads</p>
-                <p className="text-lg font-black text-amber-400">{availableLeads.length}</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Live Leads</p>
+                <p className="text-lg font-black text-amber-600">{availableLeads.length}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-navy-950/80 border border-slate-800 text-center">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Total Revenue</p>
-                <p className="text-lg font-black text-emerald-400">₹{totalEarningsCalculated}</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Total Revenue</p>
+                <p className="text-lg font-black text-emerald-600">₹{totalEarningsCalculated}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-navy-950/80 border border-slate-800 text-center">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Jobs Completed</p>
-                <p className="text-lg font-black text-cyan-400">{completedJobs.length}</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Jobs Done</p>
+                <p className="text-lg font-black text-blue-600">{completedJobs.length}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-navy-950/80 border border-slate-800 text-center">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Base Rate</p>
-                <p className="text-lg font-black text-slate-200">{worker?.hourlyRate}</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Base Rate</p>
+                <p className="text-lg font-black text-slate-800">{worker?.hourlyRate}</p>
               </div>
             </div>
           </div>
@@ -305,37 +305,34 @@ export function WorkerDashboard() {
           <div className="space-y-4 text-left">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-amber-400" />
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-500" />
                   <span>Incoming Neighborhood Leads</span>
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Real-time job requests and bookings broadcasted by residents in your area.
                 </p>
               </div>
-              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <span>Radar Live</span>
               </span>
             </div>
 
             {availableLeads.length === 0 ? (
-              <div className="py-14 px-6 rounded-3xl bg-navy-900/60 border border-slate-800 text-center space-y-4 max-w-lg mx-auto shadow-xl">
-                <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-20"></span>
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center">
-                    <Zap className="w-6 h-6" />
-                  </div>
+              <div className="py-14 px-6 rounded-3xl bg-white border border-slate-200 text-center space-y-4 max-w-lg mx-auto shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+                  <Zap className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Radar Scanning for Direct Bookings</h3>
-                  <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
-                    No active bookings assigned to your Pro ID (<b className="text-amber-300">{worker?.id}</b>) yet.
-                    When a neighbor in <b className="text-white">{worker?.neighborhood}</b> books <b className="text-white">{worker?.serviceName}</b>, it will appear here in real-time.
+                  <h3 className="text-base font-bold text-slate-900">Radar Scanning for Direct Bookings</h3>
+                  <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
+                    No active bookings assigned to your Pro ID (<b className="text-amber-800">{worker?.id}</b>) yet.
+                    When a neighbor in <b className="text-slate-800">{worker?.neighborhood}</b> books <b className="text-slate-800">{worker?.serviceName}</b>, it will appear here in real-time.
                   </p>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-semibold text-emerald-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                   <span>Available & Ready for Doorstep Dispatch</span>
                 </div>
               </div>
@@ -348,18 +345,18 @@ export function WorkerDashboard() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="p-5 rounded-2xl bg-navy-900/90 border border-slate-700/80 hover:border-amber-500/50 transition-all flex flex-col justify-between space-y-4 shadow-lg"
+                    className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-amber-400 hover:shadow-card transition-all flex flex-col justify-between space-y-4"
                   >
                     <div>
                       {/* Header tag */}
                       <div className="flex items-center justify-between gap-2 mb-2.5">
                         {lead.isEmergency ? (
-                          <span className="px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] font-extrabold flex items-center gap-1">
-                            <Flame className="w-3 h-3 text-red-400" />
+                          <span className="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 text-[10px] font-extrabold flex items-center gap-1">
+                            <Flame className="w-3 h-3 text-red-600" />
                             <span>EMERGENCY SOS</span>
                           </span>
                         ) : (
-                          <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-bold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">
                             Direct Booking
                           </span>
                         )}
@@ -367,33 +364,33 @@ export function WorkerDashboard() {
                       </div>
 
                       {/* Service Title */}
-                      <h3 className="text-base font-bold text-white leading-snug">{lead.serviceRequired}</h3>
-                      <p className="text-xs text-slate-300 mt-1 line-clamp-2">{lead.notes}</p>
+                      <h3 className="text-base font-bold text-slate-900 leading-snug">{lead.serviceRequired}</h3>
+                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{lead.notes}</p>
 
                       {/* Customer & Location */}
-                      <div className="mt-3 pt-3 border-t border-slate-800/80 space-y-1.5 text-xs text-slate-300">
+                      <div className="mt-3 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-600">
                         <div className="flex items-center gap-2">
-                          <User className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                          <span className="font-semibold text-white">{lead.customerName}</span>
+                          <User className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span className="font-semibold text-slate-900">{lead.customerName}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                           <span className="truncate">{lead.address}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                       <div>
-                        <p className="text-[10px] text-slate-400 font-semibold">Service Price</p>
-                        <p className="text-base font-black text-amber-400">{lead.offeredPrice}</p>
+                        <p className="text-[10px] text-slate-500 font-semibold">Service Price</p>
+                        <p className="text-base font-black text-amber-600">{lead.offeredPrice}</p>
                       </div>
 
                       <button
                         type="button"
                         onClick={() => handleAcceptLead(lead)}
-                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs shadow-glow-amber transition transform hover:scale-105 flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-sm transition flex items-center gap-1.5"
                       >
                         <Check className="w-4 h-4" />
                         <span>Accept Job</span>
@@ -410,12 +407,12 @@ export function WorkerDashboard() {
         {activeTab === 'active' && (
           <div className="max-w-3xl mx-auto text-left">
             {!activeJob ? (
-              <div className="p-12 rounded-3xl bg-navy-900/60 border border-slate-800 text-center space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+              <div className="p-12 rounded-3xl bg-white border border-slate-200 text-center space-y-4 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center">
                   <Navigation className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-white">No Job Currently in Progress</h3>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                <h3 className="text-base font-bold text-slate-900">No Job Currently in Progress</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
                   Accept an incoming lead from the Job Leads tab to initiate doorstep dispatch and tracking.
                 </p>
                 <button
@@ -427,47 +424,47 @@ export function WorkerDashboard() {
                 </button>
               </div>
             ) : (
-              <div className="glass-card rounded-3xl p-6 sm:p-8 border border-amber-500/30 space-y-6">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 space-y-6 shadow-sm">
                 {/* Header */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
                   <div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-wide">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-extrabold uppercase tracking-wide">
                       Active Dispatch #{activeJob.id}
                     </span>
-                    <h2 className="text-xl font-extrabold text-white mt-1.5">{activeJob.serviceRequired}</h2>
+                    <h2 className="text-xl font-extrabold text-slate-900 mt-1.5">{activeJob.serviceRequired}</h2>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-400">Total Payout</p>
-                    <p className="text-xl font-black text-amber-400">{activeJob.offeredPrice}</p>
+                    <p className="text-xs text-slate-500">Total Payout</p>
+                    <p className="text-xl font-black text-amber-600">{activeJob.offeredPrice}</p>
                   </div>
                 </div>
 
                 {/* Stepper Progress */}
                 <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className={`p-2.5 rounded-xl border ${jobStep >= 1 ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                  <div className={`p-2.5 rounded-xl border ${jobStep >= 1 ? 'bg-amber-100 border-amber-300 text-amber-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                     1. En Route
                   </div>
-                  <div className={`p-2.5 rounded-xl border ${jobStep >= 2 ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                  <div className={`p-2.5 rounded-xl border ${jobStep >= 2 ? 'bg-amber-100 border-amber-300 text-amber-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                     2. Arrived & OTP
                   </div>
-                  <div className={`p-2.5 rounded-xl border ${jobStep >= 3 ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                  <div className={`p-2.5 rounded-xl border ${jobStep >= 3 ? 'bg-amber-100 border-amber-300 text-amber-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                     3. Working
                   </div>
-                  <div className={`p-2.5 rounded-xl border ${jobStep >= 4 ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-500'}`}>
+                  <div className={`p-2.5 rounded-xl border ${jobStep >= 4 ? 'bg-emerald-100 border-emerald-300 text-emerald-800 font-bold' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
                     4. Completed
                   </div>
                 </div>
 
                 {/* Customer Details Box */}
-                <div className="p-4 rounded-2xl bg-navy-950/80 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[11px] text-slate-400">Customer Name</p>
-                      <p className="text-sm font-bold text-white">{activeJob.customerName}</p>
+                      <p className="text-[11px] text-slate-500">Customer Name</p>
+                      <p className="text-sm font-bold text-slate-900">{activeJob.customerName}</p>
                     </div>
                     <a
                       href={`tel:${activeJob.customerPhone}`}
-                      className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition"
+                      className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       <span>Call Customer</span>
@@ -475,27 +472,27 @@ export function WorkerDashboard() {
                   </div>
 
                   <div>
-                    <p className="text-[11px] text-slate-400">Destination Address</p>
-                    <p className="text-xs font-semibold text-slate-200">{activeJob.address}</p>
-                    <p className="text-[11px] text-slate-400">{activeJob.neighborhood}</p>
+                    <p className="text-[11px] text-slate-500">Destination Address</p>
+                    <p className="text-xs font-semibold text-slate-800">{activeJob.address}</p>
+                    <p className="text-[11px] text-slate-500">{activeJob.neighborhood}</p>
                   </div>
 
                   <div>
-                    <p className="text-[11px] text-slate-400">Customer Notes</p>
-                    <p className="text-xs text-slate-300 italic">"{activeJob.notes}"</p>
+                    <p className="text-[11px] text-slate-500">Customer Notes</p>
+                    <p className="text-xs text-slate-700 italic">"{activeJob.notes}"</p>
                   </div>
                 </div>
 
                 {/* STEP 1: EN ROUTE ACTION */}
                 {jobStep === 1 && (
                   <div className="space-y-3">
-                    <p className="text-xs text-slate-300">
+                    <p className="text-xs text-slate-600">
                       You are en route to customer doorstep. Click below when you arrive.
                     </p>
                     <button
                       type="button"
                       onClick={() => setJobStep(2)}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-sm shadow-glow-amber transition transform hover:scale-[1.01]"
+                      className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-sm transition"
                     >
                       I Have Arrived at Doorstep
                     </button>
@@ -505,7 +502,7 @@ export function WorkerDashboard() {
                 {/* STEP 2: ARRIVED & VERIFY OTP */}
                 {jobStep === 2 && (
                   <form onSubmit={handleVerifyOtp} className="space-y-3">
-                    <p className="text-xs text-slate-300">
+                    <p className="text-xs text-slate-600">
                       Ask customer for their 4-digit service start PIN to begin the job:
                     </p>
                     <div className="flex gap-2">
@@ -516,17 +513,17 @@ export function WorkerDashboard() {
                         onChange={(e) => setEnteredOtp(e.target.value)}
                         placeholder="Enter 4-digit PIN"
                         required
-                        className="flex-1 px-4 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-center text-lg font-mono tracking-widest text-white outline-none focus:border-amber-400"
+                        className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg font-mono tracking-widest text-slate-900 outline-none focus:border-amber-500"
                       />
                       <button
                         type="submit"
-                        className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs shadow-glow-amber"
+                        className="px-6 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs shadow-sm hover:bg-amber-600"
                       >
                         Verify & Start
                       </button>
                     </div>
                     {otpError && (
-                      <p className="text-xs text-red-400">Incorrect PIN. Please re-enter the OTP provided by the resident.</p>
+                      <p className="text-xs text-red-600">Incorrect PIN. Please re-enter the OTP provided by the resident.</p>
                     )}
                   </form>
                 )}
@@ -534,20 +531,20 @@ export function WorkerDashboard() {
                 {/* STEP 3: WORK IN PROGRESS */}
                 {jobStep === 3 && (
                   <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
                         <Clock className="w-4 h-4 animate-spin" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-emerald-300">Work in Progress</p>
-                        <p className="text-[11px] text-slate-400">Complete the task and inspect all connections</p>
+                        <p className="text-xs font-bold text-emerald-800">Work in Progress</p>
+                        <p className="text-[11px] text-slate-500">Complete the task and inspect all connections</p>
                       </div>
                     </div>
 
                     <button
                       type="button"
                       onClick={handleCompleteJob}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-sm shadow-glow-emerald transition transform hover:scale-[1.01]"
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-sm transition"
                     >
                       Job Completed - Collect {activeJob.offeredPrice}
                     </button>
@@ -556,19 +553,19 @@ export function WorkerDashboard() {
 
                 {/* STEP 4: JOB COMPLETE */}
                 {jobStep === 4 && (
-                  <div className="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
                       <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-extrabold text-white">Job Saved & Recorded!</h3>
-                    <p className="text-xs text-slate-300">
-                      Payment of <span className="font-bold text-emerald-400">{activeJob.offeredPrice}</span> has been permanently saved to your Pro profile.
+                    <h3 className="text-lg font-extrabold text-slate-900">Job Saved & Recorded!</h3>
+                    <p className="text-xs text-slate-600">
+                      Payment of <span className="font-bold text-emerald-700">{activeJob.offeredPrice}</span> has been permanently saved to your Pro profile.
                     </p>
 
                     <button
                       type="button"
                       onClick={handleDismissCompletedJob}
-                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs"
+                      className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs"
                     >
                       View in Earnings & Invoices
                     </button>
@@ -583,54 +580,54 @@ export function WorkerDashboard() {
         {activeTab === 'earnings' && (
           <div className="max-w-4xl mx-auto space-y-6 text-left">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-3xl bg-gradient-to-br from-amber-950/60 to-navy-900 border border-amber-500/40">
-                <p className="text-xs text-slate-400 font-semibold">Total Revenue Earned</p>
-                <h3 className="text-3xl font-black text-amber-400 mt-1">₹{totalEarningsCalculated}</h3>
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold">Total Revenue Earned</p>
+                <h3 className="text-3xl font-black text-amber-600 mt-1">₹{totalEarningsCalculated}</h3>
                 <button
                   type="button"
                   onClick={handleRequestPayout}
                   disabled={totalEarningsCalculated === 0}
-                  className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow-glow-amber transition disabled:opacity-40"
+                  className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-sm transition disabled:opacity-40"
                 >
                   Instant UPI Payout
                 </button>
               </div>
 
-              <div className="p-5 rounded-3xl bg-navy-900/80 border border-slate-800">
-                <p className="text-xs text-slate-400 font-semibold">Saved Job Entries</p>
-                <h3 className="text-3xl font-black text-white mt-1">{completedJobs.length}</h3>
-                <p className="text-[11px] text-emerald-400 font-semibold mt-2">Saved in your Pro Profile</p>
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold">Saved Job Entries</p>
+                <h3 className="text-3xl font-black text-slate-900 mt-1">{completedJobs.length}</h3>
+                <p className="text-[11px] text-emerald-700 font-semibold mt-2">Saved in your Pro Profile</p>
               </div>
 
-              <div className="p-5 rounded-3xl bg-navy-900/80 border border-slate-800">
-                <p className="text-xs text-slate-400 font-semibold">Platform Fee</p>
-                <h3 className="text-3xl font-black text-emerald-400 mt-1">0% Comm.</h3>
-                <p className="text-[11px] text-slate-400 font-medium mt-2">100% earnings go directly to you</p>
+              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold">Platform Fee</p>
+                <h3 className="text-3xl font-black text-emerald-600 mt-1">0% Comm.</h3>
+                <p className="text-[11px] text-slate-500 font-medium mt-2">100% earnings go directly to you</p>
               </div>
             </div>
 
             {payoutSuccess && (
-              <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Payout initiated! ₹{totalEarningsCalculated} dispatched to your registered UPI ID.</span>
               </div>
             )}
 
             {/* Real Saved Completed Jobs Table */}
-            <div className="glass-card rounded-3xl p-6 border border-slate-800 space-y-4">
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white">Completed Job History & Invoices</h3>
-                  <p className="text-xs text-slate-400">Permanently saved under your Worker ID: {worker?.id}</p>
+                  <h3 className="text-base font-bold text-slate-900">Completed Job History & Invoices</h3>
+                  <p className="text-xs text-slate-500">Permanently saved under your Worker ID: {worker?.id}</p>
                 </div>
-                <span className="text-xs font-bold text-cyan-400">{completedJobs.length} Entries</span>
+                <span className="text-xs font-bold text-blue-600">{completedJobs.length} Entries</span>
               </div>
 
               {completedJobs.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-slate-900/50 border border-slate-800 text-center space-y-2">
-                  <Receipt className="w-8 h-8 text-slate-500 mx-auto" />
-                  <p className="text-xs font-bold text-slate-300">No Completed Jobs Recorded Yet</p>
-                  <p className="text-[11px] text-slate-400">
+                <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                  <Receipt className="w-8 h-8 text-slate-400 mx-auto" />
+                  <p className="text-xs font-bold text-slate-700">No Completed Jobs Recorded Yet</p>
+                  <p className="text-[11px] text-slate-500">
                     Accept leads from your job radar and complete tasks to record your official earnings history.
                   </p>
                 </div>
@@ -638,7 +635,7 @@ export function WorkerDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left">
                     <thead>
-                      <tr className="border-b border-slate-800 text-slate-400 font-semibold">
+                      <tr className="border-b border-slate-200 text-slate-500 font-semibold">
                         <th className="pb-3">Invoice #</th>
                         <th className="pb-3">Task Details</th>
                         <th className="pb-3">Customer & Address</th>
@@ -646,17 +643,17 @@ export function WorkerDashboard() {
                         <th className="pb-3 text-right">Amount Earned</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100">
                       {completedJobs.map((job) => (
                         <tr key={job.id}>
-                          <td className="py-3 font-mono font-bold text-cyan-300">{job.invoiceNumber}</td>
-                          <td className="py-3 font-semibold text-white">{job.serviceTitle}</td>
-                          <td className="py-3 text-slate-300">
+                          <td className="py-3 font-mono font-bold text-blue-600">{job.invoiceNumber}</td>
+                          <td className="py-3 font-semibold text-slate-900">{job.serviceTitle}</td>
+                          <td className="py-3 text-slate-700">
                             <p className="font-semibold">{job.customerName}</p>
-                            <p className="text-[10px] text-slate-400 truncate max-w-[200px]">{job.address}</p>
+                            <p className="text-[10px] text-slate-500 truncate max-w-[200px]">{job.address}</p>
                           </td>
-                          <td className="py-3 text-slate-400">{job.completedAt}</td>
-                          <td className="py-3 text-right font-black text-amber-400">{job.earnedAmount}</td>
+                          <td className="py-3 text-slate-500">{job.completedAt}</td>
+                          <td className="py-3 text-right font-black text-amber-600">{job.earnedAmount}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -670,9 +667,9 @@ export function WorkerDashboard() {
         {/* TAB 4: MY PROFILE & SERVICE RATES */}
         {activeTab === 'profile' && (
           <div className="max-w-3xl mx-auto text-left">
-            <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 space-y-6 shadow-sm">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-4">
                   {/* Worker Avatar with device upload trigger */}
                   <div
@@ -683,13 +680,13 @@ export function WorkerDashboard() {
                     <img
                       src={editAvatar}
                       alt={editName}
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-400/80 shadow-glow-amber group-hover:opacity-85 transition"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-500 shadow-sm group-hover:opacity-85 transition"
                     />
-                    <div className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition text-white p-1">
-                      <Camera className="w-5 h-5 text-amber-300 mb-0.5" />
-                      <span className="text-[9px] font-bold text-amber-200 text-center leading-tight">Upload PFP</span>
+                    <div className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition text-white p-1">
+                      <Camera className="w-5 h-5 text-white mb-0.5" />
+                      <span className="text-[9px] font-bold text-white text-center leading-tight">Change</span>
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-navy-950" />
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" />
                   </div>
 
                   {/* Hidden File Input for Device Photo */}
@@ -703,21 +700,21 @@ export function WorkerDashboard() {
 
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-xl font-bold text-white">{editName || worker?.name}</h2>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      <h2 className="text-xl font-bold text-slate-900">{editName || worker?.name}</h2>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
                         Pro ID: {worker?.id}
                       </span>
                     </div>
-                    <p className="text-xs text-amber-400 font-semibold mt-0.5">{worker?.serviceName} • {worker?.neighborhood}</p>
+                    <p className="text-xs text-amber-700 font-semibold mt-0.5">{worker?.serviceName} • {worker?.neighborhood}</p>
                     <p className="text-[11px] text-slate-400 mt-0.5">Joined {worker?.joinedDate || 'Recently'}</p>
 
                     <div className="mt-2.5 flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => workerFileInputRef.current?.click()}
-                        className="px-3 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-glow-amber transition"
+                        className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
                       >
-                        <Upload className="w-3.5 h-3.5" />
+                        <Upload className="w-3.5 h-3.5 text-amber-600" />
                         <span>Upload Photo from Device</span>
                       </button>
                     </div>
@@ -732,17 +729,17 @@ export function WorkerDashboard() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-center gap-2"
+                    className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2"
                   >
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
                     <span>{workerUploadError}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {profileSaved && (
-                <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Pro profile and service rates have been successfully saved!</span>
                 </div>
               )}
@@ -750,65 +747,65 @@ export function WorkerDashboard() {
               <form onSubmit={handleSaveProfile} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Full Legal Name *
                     </label>
-                    <div className="flex items-center gap-2 px-3 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-xs text-white">
-                      <User className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 focus-within:border-amber-500 focus-within:bg-white rounded-xl text-xs text-slate-900">
+                      <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <input
                         type="text"
                         required
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full bg-transparent focus:outline-none text-xs text-white"
+                        className="w-full bg-transparent focus:outline-none text-xs text-slate-900"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Registered Phone / WhatsApp *
                     </label>
-                    <div className="flex items-center gap-2 px-3 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-xs text-white">
-                      <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 focus-within:border-amber-500 focus-within:bg-white rounded-xl text-xs text-slate-900">
+                      <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <input
                         type="tel"
                         required
                         value={editPhone}
                         onChange={(e) => setEditPhone(e.target.value)}
-                        className="w-full bg-transparent focus:outline-none text-xs text-white"
+                        className="w-full bg-transparent focus:outline-none text-xs text-slate-900"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Base Hourly / Starting Rate (₹) *
                     </label>
-                    <div className="flex items-center gap-2 px-3 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-xs text-white">
-                      <DollarSign className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 focus-within:border-amber-500 focus-within:bg-white rounded-xl text-xs text-slate-900">
+                      <DollarSign className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <input
                         type="text"
                         required
                         value={editRate}
                         onChange={(e) => setEditRate(e.target.value)}
-                        className="w-full bg-transparent focus:outline-none text-xs text-white font-mono font-bold"
+                        className="w-full bg-transparent focus:outline-none text-xs text-slate-900 font-mono font-bold"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Experience in Field
                     </label>
-                    <div className="flex items-center gap-2 px-3 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-xs text-white">
-                      <Briefcase className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 focus-within:border-amber-500 focus-within:bg-white rounded-xl text-xs text-slate-900">
+                      <Briefcase className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                       <input
                         type="text"
                         value={editExperience}
                         onChange={(e) => setEditExperience(e.target.value)}
                         placeholder="e.g. 5+ Years"
-                        className="w-full bg-transparent focus:outline-none text-xs text-white"
+                        className="w-full bg-transparent focus:outline-none text-xs text-slate-900"
                       />
                     </div>
                   </div>
@@ -816,32 +813,32 @@ export function WorkerDashboard() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Specialty Service Listed
                     </label>
                     <input
                       type="text"
                       disabled
                       value={worker?.serviceName || 'Certified Specialist'}
-                      className="w-full px-3.5 py-2.5 bg-navy-950 border border-slate-800 rounded-xl text-slate-400 text-xs cursor-not-allowed"
+                      className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs cursor-not-allowed"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Primary Neighborhood Coverage
                     </label>
                     <input
                       type="text"
                       disabled
                       value={worker?.neighborhood || 'Indiranagar / 100ft Road'}
-                      className="w-full px-3.5 py-2.5 bg-navy-950 border border-slate-800 rounded-xl text-slate-400 text-xs cursor-not-allowed"
+                      className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs cursor-not-allowed"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Professional Bio & Credentials Description
                   </label>
                   <textarea
@@ -849,39 +846,39 @@ export function WorkerDashboard() {
                     value={editBio}
                     onChange={(e) => setEditBio(e.target.value)}
                     placeholder="Briefly describe your expertise, certifications, and trade background..."
-                    className="w-full px-3.5 py-2.5 bg-navy-900 border border-slate-700 rounded-xl text-white text-xs outline-none focus:border-amber-400 resize-none"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs outline-none focus:border-amber-500 focus:bg-white resize-none"
                   />
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 flex items-center justify-between gap-3">
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                      <Flame className="w-4 h-4 text-amber-400" />
+                    <p className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                      <Flame className="w-4 h-4 text-amber-600" />
                       <span>24/7 Emergency SOS Callouts Ready</span>
                     </p>
-                    <p className="text-[11px] text-slate-400">Receive priority high-rate urgent bookings in your neighborhood</p>
+                    <p className="text-[10px] text-slate-600">Receive priority high-rate urgent bookings in your neighborhood</p>
                   </div>
                   <input
                     type="checkbox"
                     checked={editEmergency}
                     onChange={(e) => setEditEmergency(e.target.checked)}
-                    className="w-5 h-5 rounded border-slate-700 bg-navy-900 text-amber-500 focus:ring-amber-400 accent-amber-500 cursor-pointer"
+                    className="w-5 h-5 rounded border-slate-300 text-amber-600 focus:ring-amber-500 accent-amber-600 cursor-pointer"
                   />
                 </div>
 
                 {/* Trust & Safety Status */}
-                <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
-                  <p className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
                     <span>Professional Verification Charter</span>
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-400">
-                    <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-850 border border-slate-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-600">
+                    <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>Trade Identity Verified</span>
                     </div>
-                    <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-850 border border-slate-700">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>Police Background Clearance</span>
                     </div>
                   </div>
@@ -889,7 +886,7 @@ export function WorkerDashboard() {
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs shadow-glow-amber transition transform hover:scale-[1.01] flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-sm transition flex items-center justify-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Pro Settings & Profile</span>

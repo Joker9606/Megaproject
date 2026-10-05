@@ -18,9 +18,9 @@ import { FAQSection } from './components/sections/FAQSection';
 import { FinalCTASection } from './components/sections/FinalCTASection';
 import { Footer } from './components/sections/Footer';
 
+import { BookingPage } from './components/booking/BookingPage';
 import { FindServiceModal } from './components/modals/FindServiceModal';
 import { ServiceDetailsModal } from './components/modals/ServiceDetailsModal';
-import { BookServiceModal } from './components/modals/BookServiceModal';
 import { JoinProModal } from './components/modals/JoinProModal';
 import { AppDownloadModal } from './components/modals/AppDownloadModal';
 import { EmergencySOSModal } from './components/modals/EmergencySOSModal';
@@ -32,6 +32,9 @@ import { ServiceItem, VerifiedPro } from './types';
 
 function MainLayout() {
   const { services, pros } = useNetwork();
+
+  // Page view routing: 'home' | 'booking'
+  const [currentView, setCurrentView] = useState<'home' | 'booking'>('home');
 
   // Modal states
   const [isFindModalOpen, setIsFindModalOpen] = useState(false);
@@ -49,8 +52,7 @@ function MainLayout() {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  // Booking Modal state
-  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  // Dedicated Booking state
   const [bookingService, setBookingService] = useState<ServiceItem | null>(null);
   const [bookingPro, setBookingPro] = useState<VerifiedPro | null>(null);
 
@@ -84,14 +86,16 @@ function MainLayout() {
 
     setBookingService(service);
     setBookingPro(matchingPro);
-    setIsBookModalOpen(true);
+    setCurrentView('booking');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBookPro = (pro: VerifiedPro) => {
     setBookingPro(pro);
     const matchingService = services.find((s) => s.id === pro.serviceId) || null;
     setBookingService(matchingService);
-    setIsBookModalOpen(true);
+    setCurrentView('booking');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectProFromMap = (proName: string, serviceName: string) => {
@@ -119,15 +123,21 @@ function MainLayout() {
 
     setBookingService(matchingService);
     setBookingPro(matchingPro);
-    setIsBookModalOpen(true);
+    setCurrentView('booking');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenJoinPro = () => {
     setIsJoinProModalOpen(true);
   };
 
+  const handleNavigateHome = () => {
+    setCurrentView('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div className="min-h-screen bg-navy-950 text-slate-100 selection:bg-electric selection:text-white relative">
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white relative">
       {/* Navigation */}
       <Navbar
         onOpenFindModal={() => handleOpenFindModal()}
@@ -135,79 +145,86 @@ function MainLayout() {
         onOpenJoinModal={handleOpenJoinPro}
         onOpenBookingsModal={() => setIsBookingsModalOpen(true)}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
+        onNavigateHome={handleNavigateHome}
       />
 
-      {/* Main Sections */}
-      <main>
-        {/* 1. Hero Section with 3D Smart Neighborhood */}
-        <HeroSection
-          onOpenFindModal={handleOpenFindModal}
-          onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
-          onSelectProFromMap={handleSelectProFromMap}
-        />
+      {/* Main Content View: Booking Page OR Home Page */}
+      {currentView === 'booking' ? (
+        <main className="py-6 sm:py-10">
+          <BookingPage
+            service={bookingService}
+            pro={bookingPro}
+            onBack={handleNavigateHome}
+            onOpenMyBookings={() => {
+              handleNavigateHome();
+              setIsBookingsModalOpen(true);
+            }}
+            onOpenExploreServices={() => {
+              handleNavigateHome();
+              handleOpenFindModal('all');
+            }}
+          />
+        </main>
+      ) : (
+        <main>
+          {/* 1. Hero Section */}
+          <HeroSection
+            onOpenFindModal={handleOpenFindModal}
+            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
+            onSelectProFromMap={handleSelectProFromMap}
+          />
 
-        {/* 2. Key Live Statistics with 3D Depth Cards */}
-        <StatisticsSection />
+          {/* 2. Key Live Statistics */}
+          <StatisticsSection />
 
-        {/* 3. Services Directory Section with 3D Hologram Inspector & direct booking */}
-        <ServicesSection
-          onSelectService={handleSelectServiceForDetails}
-          onBookService={handleBookService}
-          onOpenExploreAll={() => handleOpenFindModal('all')}
-        />
+          {/* 3. Services Directory Section with direct booking page navigation */}
+          <ServicesSection
+            onSelectService={handleSelectServiceForDetails}
+            onBookService={handleBookService}
+            onOpenExploreAll={() => handleOpenFindModal('all')}
+          />
 
-        {/* 4. How It Works Section with 3D Journey Steps */}
-        <HowItWorksSection onOpenFindModal={() => handleOpenFindModal()} />
+          {/* 4. How It Works Section */}
+          <HowItWorksSection onOpenFindModal={() => handleOpenFindModal()} />
 
-        {/* 5. Why Trust Us Section with 3D Shield Pillars */}
-        <WhyTrustUsSection />
+          {/* 5. Why Trust Us Section */}
+          <WhyTrustUsSection />
 
-        {/* 6. Emergency SOS Help Section with 3D Radar Beacon */}
-        <EmergencySection
-          onOpenEmergencyModal={() => setIsEmergencyModalOpen(true)}
-        />
+          {/* 6. Emergency SOS Help Section */}
+          <EmergencySection
+            onOpenEmergencyModal={() => setIsEmergencyModalOpen(true)}
+          />
 
-        {/* 7. For Professionals Section with 3D Tilt Estimator */}
-        <ForProfessionalsSection
-          onOpenJoinModal={handleOpenJoinPro}
-        />
+          {/* 7. For Professionals Section */}
+          <ForProfessionalsSection
+            onOpenJoinModal={handleOpenJoinPro}
+          />
 
-        {/* 8. App Promotion Section with 3D Orbit Smartphone */}
-        <AppPromotionSection
-          onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
-          onOpenLearnMore={() => setIsAppDownloadModalOpen(true)}
-        />
+          {/* 8. App Promotion Section */}
+          <AppPromotionSection
+            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
+            onOpenLearnMore={() => setIsAppDownloadModalOpen(true)}
+          />
 
-        {/* 9. About Us Section */}
-        <AboutUsSection />
+          {/* 9. About Us Section */}
+          <AboutUsSection />
 
-        {/* 10. Contact Section */}
-        <ContactSection />
+          {/* 10. Contact Section */}
+          <ContactSection />
 
-        {/* 11. FAQ Section */}
-        <FAQSection />
+          {/* 11. FAQ Section */}
+          <FAQSection />
 
-        {/* 12. Final CTA Section with 3D Spatial Mesh */}
-        <FinalCTASection
-          onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
-          onOpenFindModal={() => handleOpenFindModal()}
-        />
-      </main>
+          {/* 12. Final CTA Section */}
+          <FinalCTASection
+            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
+            onOpenFindModal={() => handleOpenFindModal()}
+          />
+        </main>
+      )}
 
       {/* Footer */}
       <Footer />
-
-      {/* Direct Booking Modal */}
-      <BookServiceModal
-        isOpen={isBookModalOpen}
-        onClose={() => {
-          setIsBookModalOpen(false);
-          setBookingService(null);
-          setBookingPro(null);
-        }}
-        service={bookingService}
-        pro={bookingPro}
-      />
 
       {/* Informational Directory Lookup Modal */}
       <FindServiceModal
@@ -302,18 +319,16 @@ function MainLayout() {
 function AppContent() {
   const { isAuthenticated, currentUser, authLoading } = useAuth();
 
-  // Show sleek loader while Firebase Auth resolves session from Cloud
+  // Show clean light loader while Firebase Auth resolves session from Cloud
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-navy-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-emerald-400 p-[2px] shadow-glow-cyan mb-4 animate-pulse">
-          <div className="w-full h-full bg-navy-950 rounded-2xl flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
-          </div>
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center shadow-sm mb-4">
+          <div className="w-6 h-6 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
-        <p className="text-sm font-bold text-white tracking-wide">Smart Neighborhood Network</p>
-        <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+        <p className="text-sm font-bold text-slate-900 tracking-wide">Smart Neighborhood Network</p>
+        <p className="text-xs text-blue-600 mt-1 flex items-center gap-1.5 font-medium">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           Connecting to Firebase Cloud...
         </p>
       </div>
@@ -345,5 +360,3 @@ export function App() {
 }
 
 export default App;
-
-

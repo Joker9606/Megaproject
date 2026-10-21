@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Search, ShieldCheck, Zap, Sparkles } from 'lucide-react';
+import { Smartphone, Search, ShieldCheck, Zap, Sparkles, Download } from 'lucide-react';
+import { triggerApkDownload } from '../../utils/appInstall';
 
 interface FinalCTASectionProps {
   onOpenAppModal: () => void;
@@ -30,13 +31,15 @@ export function FinalCTASection({ onOpenAppModal, onOpenFindModal }: FinalCTASec
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
-          <button
-            onClick={onOpenAppModal}
-            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base shadow-sm hover:shadow transition flex items-center gap-2.5"
+          <a
+            href="/SmartNeighborhood-v1.0.apk"
+            download="SmartNeighborhood-v1.0.apk"
+            onClick={() => triggerApkDownload()}
+            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base shadow-sm hover:shadow transition flex items-center gap-2.5 cursor-pointer"
           >
-            <Smartphone className="w-5 h-5" />
-            <span>Download the App</span>
-          </button>
+            <Download className="w-5 h-5" />
+            <span>Download Android APK</span>
+          </a>
 
           <button
             onClick={onOpenFindModal}

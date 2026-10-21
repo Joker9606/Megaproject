@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Wrench, Power, LogOut, Bell, Flame } from 'lucide-react';
+import { Shield, Wrench, Power, LogOut, Bell, Flame, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { WorkerUser } from '../../types/auth';
 
@@ -108,6 +108,17 @@ export function WorkerNavbar({
               {worker?.isAvailableNow ? 'Duty: ONLINE' : 'Duty: OFFLINE'}
             </span>
           </button>
+
+          {/* Worker APK Download Button */}
+          <a
+            href="/SmartNeighborhood-v1.0.apk"
+            download="SmartNeighborhood-v1.0.apk"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold transition"
+            title="Download Android APK"
+          >
+            <Download className="w-3.5 h-3.5 text-amber-600" />
+            <span>APK App</span>
+          </a>
 
           {/* User Avatar & Logout */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-200">

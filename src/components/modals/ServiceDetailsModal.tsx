@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, ShieldCheck, Clock, MapPin, Phone, Smartphone, Info, Star, Calendar, ChevronRight } from 'lucide-react';
+import { X, CheckCircle2, ShieldCheck, Clock, MapPin, Phone, Smartphone, Info, Star, Calendar, ChevronRight, Download } from 'lucide-react';
 import { ServiceItem, VerifiedPro } from '../../types';
 import { ServiceIcon } from '../common/ServiceIcon';
 import { formatINR } from '../../utils/formatCurrency';
+import { triggerApkDownload } from '../../utils/appInstall';
 
 interface ServiceDetailsModalProps {
   isOpen: boolean;
@@ -222,18 +223,16 @@ export function ServiceDetailsModal({
                 <div className="text-xs font-bold text-slate-900">Need immediate assistance or phone inquiry?</div>
                 <div className="text-[11px] text-slate-500">Call our 24/7 toll-free neighborhood helpdesk: 1800-120-SMART</div>
               </div>
-              {onOpenAppModal && (
-                <button
-                  onClick={() => {
-                    onClose();
-                    onOpenAppModal();
-                  }}
-                  className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-blue-600 font-bold text-xs shrink-0 flex items-center gap-1.5 shadow-sm"
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>Get Mobile App</span>
-                </button>
-              )}
+              <a
+                href="/SmartNeighborhood-v1.0.apk"
+                download="SmartNeighborhood-v1.0.apk"
+                onClick={() => triggerApkDownload()}
+                className="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-bold text-xs shrink-0 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                title="Download Android APK"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-600" />
+                <span>Download Android APK</span>
+              </a>
             </div>
 
           </div>

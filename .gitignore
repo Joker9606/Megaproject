@@ -7,6 +7,14 @@ node_modules/
 dist/
 build/
 
+# Android build intermediates
+android_build/bin/
+android_build/gen/
+android_build/dex/
+android_build/*.apk
+android_build/*.zip
+*.class
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

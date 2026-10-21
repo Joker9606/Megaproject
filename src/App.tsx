@@ -27,6 +27,7 @@ import { AppDownloadModal } from './components/modals/AppDownloadModal';
 import { EmergencySOSModal } from './components/modals/EmergencySOSModal';
 import { NoWorkerAvailableModal } from './components/modals/NoWorkerAvailableModal';
 import { ResidentProfileModal } from './components/modals/ResidentProfileModal';
+import { PWAInstallBanner } from './components/common/PWAInstallBanner';
 
 import { ServiceItem, VerifiedPro } from './types';
 
@@ -316,6 +317,9 @@ function MainLayout() {
         onOpenJoinPro={handleOpenJoinPro}
         onExploreOtherServices={() => handleOpenFindModal('all')}
       />
+
+      {/* Floating PWA Install & Direct APK Download Banner */}
+      <PWAInstallBanner />
     </div>
   );
 }

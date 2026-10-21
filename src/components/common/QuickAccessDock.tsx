@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, PlusCircle, UserCheck, Zap } from 'lucide-react';
+import { Search, PlusCircle, UserCheck, Zap, Smartphone, Download } from 'lucide-react';
 import { useNetwork } from '../../context/NetworkContext';
+import { triggerApkDownload } from '../../utils/appInstall';
 
 interface QuickAccessDockProps {
   onOpenFindModal: () => void;
@@ -50,6 +51,18 @@ export function QuickAccessDock({
         <Zap className="w-3.5 h-3.5 text-red-600 fill-red-600" />
         <span>SOS Dispatch</span>
       </button>
+
+      {/* 4. Download APK App */}
+      <a
+        href="/SmartNeighborhood-v1.0.apk"
+        download="SmartNeighborhood-v1.0.apk"
+        onClick={() => triggerApkDownload()}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold transition group cursor-pointer shadow-xs"
+        title="Download Android APK"
+      >
+        <Download className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
+        <span>Download APK</span>
+      </a>
     </aside>
   );
 }

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, MapPin, Search, ArrowRight, Smartphone, CheckCircle2, Sparkles, Wrench, Star } from 'lucide-react';
+import { ShieldCheck, MapPin, Search, ArrowRight, Smartphone, CheckCircle2, Sparkles, Wrench, Star, Download } from 'lucide-react';
 import { NeighborhoodCanvas } from '../3d/NeighborhoodCanvas';
 import { ParticleNetwork3D } from '../3d/ParticleNetwork3D';
 import { useNetwork } from '../../context/NetworkContext';
 import { formatINR } from '../../utils/formatCurrency';
+import { triggerApkDownload } from '../../utils/appInstall';
 
 interface HeroSectionProps {
   onOpenFindModal: (serviceId?: string) => void;
@@ -116,13 +117,15 @@ export function HeroSection({ onOpenFindModal, onOpenAppModal, onSelectProFromMa
                 <span>Browse All Services</span>
               </button>
 
-              <button
-                onClick={onOpenAppModal}
-                className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm transition-all flex items-center gap-2 shadow-sm"
+              <a
+                href="/SmartNeighborhood-v1.0.apk"
+                download="SmartNeighborhood-v1.0.apk"
+                onClick={() => triggerApkDownload()}
+                className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-sm transition-all flex items-center gap-2 shadow-sm cursor-pointer"
               >
-                <Smartphone className="w-4 h-4 text-blue-600" />
-                <span>Get Mobile App</span>
-              </button>
+                <Download className="w-4 h-4 text-blue-600" />
+                <span>Download Android APK</span>
+              </a>
             </div>
 
             {/* Trust Indicators */}

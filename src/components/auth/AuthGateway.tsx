@@ -8,6 +8,8 @@ import {
   Lock,
   PhoneCall,
   Activity,
+  Download,
+  Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserAuthForm } from './UserAuthForm';
@@ -42,9 +44,21 @@ export function AuthGateway({ onEnterSite }: AuthGatewayProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span className="text-slate-600 font-medium">Secure Verification Portal</span>
+        <div className="flex items-center gap-2.5">
+          <a
+            href="/SmartNeighborhood-v1.0.apk"
+            download="SmartNeighborhood-v1.0.apk"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold transition shadow-xs"
+            title="Download Android APK"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">Download</span> APK
+          </a>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="text-slate-600 font-medium">Secure Verification Portal</span>
+          </div>
         </div>
       </header>
 

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Smartphone, Download, CheckCircle2, Navigation, MessageSquare, ShieldCheck, ArrowRight, RotateCw } from 'lucide-react';
 import { ModernPhoneMockup } from '../common/ModernPhoneMockup';
 import { Smartphone3D } from '../3d/Smartphone3D';
+import { triggerApkDownload } from '../../utils/appInstall';
 
 interface AppPromotionSectionProps {
   onOpenAppModal: () => void;
@@ -100,26 +101,28 @@ export function AppPromotionSection({ onOpenAppModal, onOpenLearnMore }: AppProm
 
             {/* Download Buttons */}
             <div className="pt-3 flex flex-wrap items-center gap-3">
-              <button
-                onClick={onOpenAppModal}
-                className="px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all transform hover:scale-105 flex items-center gap-2.5"
+              <a
+                href="/SmartNeighborhood-v1.0.apk"
+                download="SmartNeighborhood-v1.0.apk"
+                onClick={() => triggerApkDownload()}
+                className="px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all transform hover:scale-105 flex items-center gap-2.5 cursor-pointer"
               >
                 <Download className="w-4 h-4" />
-                <span>Download Android App</span>
-              </button>
+                <span>Download Android APK (v1.0)</span>
+              </a>
 
               <button
-                onClick={onOpenLearnMore}
+                onClick={onOpenAppModal}
                 className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-sm"
               >
-                <span>App Overview</span>
-                <ArrowRight className="w-4 h-4 text-blue-600" />
+                <Smartphone className="w-4 h-4 text-blue-600" />
+                <span>QR Code & PWA Install</span>
               </button>
             </div>
 
             <div className="text-[11px] text-slate-500 flex items-center gap-2 pt-1 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Available for Android (APK / Google Play) & iOS (App Store) • v2.4.0</span>
+              <span>Available as signed Android APK & Installable Web Application (PWA) • v1.0</span>
             </div>
           </div>
 

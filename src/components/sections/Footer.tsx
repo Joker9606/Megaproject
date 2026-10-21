@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Send, CheckCircle2, Heart, ArrowUp } from 'lucide-react';
+import { Shield, Send, CheckCircle2, Heart, ArrowUp, Download, Smartphone } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function Footer() {
@@ -85,6 +85,16 @@ export function Footer() {
               <li><a href="#how-it-works" className="hover:text-blue-400 transition">How It Works</a></li>
               <li><a href="#why-trust-us" className="hover:text-blue-400 transition">Why Trust Us</a></li>
               <li><a href="#about-us" className="hover:text-blue-400 transition">About Network</a></li>
+              <li>
+                <a
+                  href="/SmartNeighborhood-v1.0.apk"
+                  download="SmartNeighborhood-v1.0.apk"
+                  className="text-blue-400 font-bold hover:text-blue-300 transition flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Android APK (v1.0)</span>
+                </a>
+              </li>
             </ul>
           </div>
 

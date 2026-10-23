@@ -289,8 +289,8 @@ export function BookServiceModal({ isOpen, onClose, service, pro }: BookServiceM
                     <span className="text-white font-bold">{baselineRate}</span>
                   </div>
                   <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between font-bold text-white">
-                    <span>Pay Post-Service:</span>
-                    <span className="text-cyan-300">UPI / Cash / Card</span>
+                    <span>Advance Payment:</span>
+                    <span className="text-emerald-400">₹0 (Pay After Service)</span>
                   </div>
                 </div>
 

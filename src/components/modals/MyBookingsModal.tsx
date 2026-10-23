@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   User,
-  Phone,
   Sparkles,
   AlertCircle,
   FileText,
@@ -240,15 +239,7 @@ export function MyBookingsModal({
                               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                               <span>{booking.proName}</span>
                             </span>
-                            {booking.proPhone && (
-                              <a
-                                href={`tel:${booking.proPhone}`}
-                                className="text-[11px] text-blue-600 font-semibold hover:underline flex items-center gap-1"
-                              >
-                                <Phone className="w-3 h-3" />
-                                <span>{booking.proPhone}</span>
-                              </a>
-                            )}
+
                           </div>
                         )}
 

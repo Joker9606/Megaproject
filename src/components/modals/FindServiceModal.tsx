@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search, MapPin, Star, ShieldCheck, Phone, Info, Calendar } from 'lucide-react';
+import { X, Search, MapPin, Star, ShieldCheck, Info, Calendar } from 'lucide-react';
 import { useNetwork } from '../../context/NetworkContext';
 import { VerifiedPro, ServiceItem } from '../../types';
 import { formatINR } from '../../utils/formatCurrency';
@@ -29,7 +29,6 @@ export function FindServiceModal({
   const [selectedCategory, setSelectedCategory] = useState<string>(initialService || 'all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDistance, setSelectedDistance] = useState('5');
-  const [revealedPhoneId, setRevealedPhoneId] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -203,13 +202,6 @@ export function FindServiceModal({
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        onClick={() => setRevealedPhoneId(revealedPhoneId === pro.id ? null : pro.id)}
-                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center gap-1"
-                      >
-                        <Phone className="w-3 h-3" />
-                        <span>{revealedPhoneId === pro.id ? (pro.phone || '+91 98450 21980') : 'Call'}</span>
-                      </button>
 
                       {onSelectServiceForDetails && (
                         <button

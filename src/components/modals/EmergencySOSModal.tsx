@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertTriangle, Phone, Radio, ShieldCheck, MapPin, CheckCircle2, Zap, ShieldAlert, Navigation, Loader2 } from 'lucide-react';
+import { X, AlertTriangle, Radio, ShieldCheck, MapPin, CheckCircle2, Zap, ShieldAlert, Navigation, Loader2 } from 'lucide-react';
 import { useNetwork } from '../../context/NetworkContext';
 import { useAuth } from '../../context/AuthContext';
 import { ResidentUser } from '../../types/auth';
@@ -332,18 +332,11 @@ export function EmergencySOSModal({ isOpen, onClose }: EmergencySOSModalProps) {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <a
-                  href={`tel:${matchedPro.phone || '+919845000000'}`}
-                  className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Call Pro</span>
-                </a>
+              {/* Action Button */}
+              <div>
                 <button
                   onClick={onClose}
-                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold"
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold shadow-sm transition"
                 >
                   Close & Track
                 </button>

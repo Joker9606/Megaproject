@@ -492,18 +492,9 @@ export function WorkerDashboard() {
 
                 {/* Customer Details Box */}
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] text-slate-500">Customer Name</p>
-                      <p className="text-sm font-bold text-slate-900">{activeJob.customerName}</p>
-                    </div>
-                    <a
-                      href={`tel:${activeJob.customerPhone}`}
-                      className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      <span>Call Customer</span>
-                    </a>
+                  <div>
+                    <p className="text-[11px] text-slate-500">Customer Name</p>
+                    <p className="text-sm font-bold text-slate-900">{activeJob.customerName}</p>
                   </div>
 
                   <div>

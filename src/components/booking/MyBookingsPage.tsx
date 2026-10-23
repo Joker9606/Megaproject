@@ -7,7 +7,6 @@ import {
   MapPin,
   CheckCircle2,
   ShieldCheck,
-  Phone,
   Key,
   Star,
   Tag,
@@ -315,15 +314,7 @@ export function MyBookingsPage({ onBack, onOpenExploreServices }: MyBookingsPage
                             </div>
                           </div>
 
-                          {booking.proPhone && (
-                            <a
-                              href={`tel:${booking.proPhone}`}
-                              className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1 transition"
-                            >
-                              <Phone className="w-3 h-3" />
-                              <span>Call</span>
-                            </a>
-                          )}
+
                         </div>
                       )}
 

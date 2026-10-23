@@ -16,7 +16,6 @@ import {
   Check,
   Sparkles,
   Info,
-  CreditCard,
   Building,
   Home,
   ChevronRight,
@@ -104,7 +103,6 @@ export function BookingPage({
   const [customDate, setCustomDate] = useState('');
   const [taskDetails, setTaskDetails] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card'>('UPI');
 
   // Submission & Confirmation state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -589,36 +587,6 @@ export function BookingPage({
                   </div>
                 </div>
 
-                {/* Section 5: Payment Preference (Pay After Service) */}
-                <div className="space-y-3 pt-2 border-t border-slate-100">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-blue-600" />
-                    <span>5. Payment Method (Pay on Job Completion)</span>
-                  </h3>
-
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {[
-                      { id: 'UPI', label: 'UPI / QR Code', sub: 'GPay, PhonePe, Paytm' },
-                      { id: 'Cash', label: 'Cash on Delivery', sub: 'Pay in hand' },
-                      { id: 'Card', label: 'Card / NetBanking', sub: 'Debit or Credit' },
-                    ].map((mode) => (
-                      <button
-                        key={mode.id}
-                        type="button"
-                        onClick={() => setPaymentMethod(mode.id as any)}
-                        className={`p-3 rounded-2xl border text-center transition ${
-                          paymentMethod === mode.id
-                            ? 'bg-blue-50 border-blue-500 text-blue-900 font-bold ring-2 ring-blue-500/20 shadow-sm'
-                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white'
-                        }`}
-                      >
-                        <div className="text-xs font-bold">{mode.label}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">{mode.sub}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Submit Action */}
                 <div className="pt-4 border-t border-slate-100 space-y-3">
                   <button
@@ -695,10 +663,6 @@ export function BookingPage({
               <div className="flex items-center justify-between text-slate-600">
                 <span>Payment:</span>
                 <span className="font-bold text-emerald-700">Custom Quote (Pay After Service)</span>
-              </div>
-              <div className="flex items-center justify-between text-slate-600">
-                <span>Payment Mode:</span>
-                <span className="font-semibold text-slate-900">{paymentMethod} / Cash / UPI</span>
               </div>
             </div>
 

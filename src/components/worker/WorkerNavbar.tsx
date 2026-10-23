@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Wrench, Power, LogOut, Bell, Flame } from 'lucide-react';
+import { Shield, Wrench, Power, LogOut, Bell, Flame, FileBarChart } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { WorkerUser } from '../../types/auth';
 
@@ -7,12 +7,14 @@ interface WorkerNavbarProps {
   activeTab: 'leads' | 'active' | 'earnings' | 'profile';
   setActiveTab: (tab: 'leads' | 'active' | 'earnings' | 'profile') => void;
   pendingLeadsCount: number;
+  onOpenReport?: () => void;
 }
 
 export function WorkerNavbar({
   activeTab,
   setActiveTab,
   pendingLeadsCount,
+  onOpenReport,
 }: WorkerNavbarProps) {
   const { currentUser, toggleWorkerAvailability, logout } = useAuth();
   const worker = currentUser as WorkerUser;
@@ -94,6 +96,19 @@ export function WorkerNavbar({
 
         {/* Right Controls: Availability Toggle & Logout */}
         <div className="flex items-center gap-3">
+          {/* Create Report Button */}
+          {onOpenReport && (
+            <button
+              type="button"
+              onClick={onOpenReport}
+              className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+              title="Create Work & Performance Report"
+            >
+              <FileBarChart className="w-3.5 h-3.5 text-amber-600" />
+              <span className="hidden sm:inline">Work Report</span>
+            </button>
+          )}
+
           {/* Online/Offline Toggle */}
           <button
             onClick={toggleWorkerAvailability}

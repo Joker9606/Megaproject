@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Shield, Smartphone, Search, User, Wrench, Calendar, Download } from 'lucide-react';
+import { Menu, X, Shield, Search, User, Wrench, Calendar } from 'lucide-react';
 import { UserProfileMenu } from '../auth/UserProfileMenu';
 import { useAuth } from '../../context/AuthContext';
-import { triggerApkDownload } from '../../utils/appInstall';
 
 interface NavbarProps {
   onOpenFindModal: () => void;
-  onOpenAppModal: () => void;
   onOpenJoinModal?: () => void;
   onOpenBookingsModal?: () => void;
   onOpenProfileModal?: () => void;
@@ -16,7 +14,6 @@ interface NavbarProps {
 
 export function Navbar({
   onOpenFindModal,
-  onOpenAppModal,
   onOpenJoinModal,
   onOpenBookingsModal,
   onOpenProfileModal,
@@ -115,18 +112,6 @@ export function Navbar({
               )}
             </button>
           )}
-
-          {/* Download APK Button */}
-          <a
-            href="/SmartNeighborhood-v1.0.apk"
-            download="SmartNeighborhood-v1.0.apk"
-            onClick={() => triggerApkDownload()}
-            className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Download Android APK"
-          >
-            <Download className="w-3.5 h-3.5 text-blue-600" />
-            <span>Download APK</span>
-          </a>
 
           {/* Explore Directory CTA */}
           <button
@@ -276,19 +261,6 @@ export function Navbar({
                   <span>Register as a Local Pro</span>
                 </button>
               )}
-
-              <a
-                href="/SmartNeighborhood-v1.0.apk"
-                download="SmartNeighborhood-v1.0.apk"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  triggerApkDownload();
-                }}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-              >
-                <Download className="w-4 h-4 text-white" />
-                <span>Download Android APK (v1.0)</span>
-              </a>
             </div>
           </motion.div>
         )}

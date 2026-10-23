@@ -11,7 +11,6 @@ import { HowItWorksSection } from './components/sections/HowItWorksSection';
 import { WhyTrustUsSection } from './components/sections/WhyTrustUsSection';
 import { EmergencySection } from './components/sections/EmergencySection';
 import { ForProfessionalsSection } from './components/sections/ForProfessionalsSection';
-import { AppPromotionSection } from './components/sections/AppPromotionSection';
 import { AboutUsSection } from './components/sections/AboutUsSection';
 import { ContactSection } from './components/sections/ContactSection';
 import { FAQSection } from './components/sections/FAQSection';
@@ -23,11 +22,9 @@ import { MyBookingsPage } from './components/booking/MyBookingsPage';
 import { FindServiceModal } from './components/modals/FindServiceModal';
 import { ServiceDetailsModal } from './components/modals/ServiceDetailsModal';
 import { JoinProModal } from './components/modals/JoinProModal';
-import { AppDownloadModal } from './components/modals/AppDownloadModal';
 import { EmergencySOSModal } from './components/modals/EmergencySOSModal';
 import { NoWorkerAvailableModal } from './components/modals/NoWorkerAvailableModal';
 import { ResidentProfileModal } from './components/modals/ResidentProfileModal';
-import { PWAInstallBanner } from './components/common/PWAInstallBanner';
 
 import { ServiceItem, VerifiedPro } from './types';
 
@@ -42,7 +39,6 @@ function MainLayout() {
   const [findInitialService, setFindInitialService] = useState<string | undefined>(undefined);
 
   const [isJoinProModalOpen, setIsJoinProModalOpen] = useState(false);
-  const [isAppDownloadModalOpen, setIsAppDownloadModalOpen] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNoWorkerModalOpen, setIsNoWorkerModalOpen] = useState(false);
@@ -146,7 +142,6 @@ function MainLayout() {
       {/* Navigation */}
       <Navbar
         onOpenFindModal={() => handleOpenFindModal()}
-        onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
         onOpenJoinModal={handleOpenJoinPro}
         onOpenBookingsModal={handleOpenMyBookings}
         onOpenProfileModal={() => setIsProfileModalOpen(true)}
@@ -182,7 +177,6 @@ function MainLayout() {
           {/* 1. Hero Section */}
           <HeroSection
             onOpenFindModal={handleOpenFindModal}
-            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
             onSelectProFromMap={handleSelectProFromMap}
           />
 
@@ -212,24 +206,17 @@ function MainLayout() {
             onOpenJoinModal={handleOpenJoinPro}
           />
 
-          {/* 8. App Promotion Section */}
-          <AppPromotionSection
-            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
-            onOpenLearnMore={() => setIsAppDownloadModalOpen(true)}
-          />
-
-          {/* 9. About Us Section */}
+          {/* 8. About Us Section */}
           <AboutUsSection />
 
-          {/* 10. Contact Section */}
+          {/* 9. Contact Section */}
           <ContactSection />
 
-          {/* 11. FAQ Section */}
+          {/* 10. FAQ Section */}
           <FAQSection />
 
-          {/* 12. Final CTA Section */}
+          {/* 11. Final CTA Section */}
           <FinalCTASection
-            onOpenAppModal={() => setIsAppDownloadModalOpen(true)}
             onOpenFindModal={() => handleOpenFindModal()}
           />
         </main>
@@ -272,22 +259,12 @@ function MainLayout() {
           setIsDetailsModalOpen(false);
           handleBookPro(pro);
         }}
-        onOpenAppModal={() => {
-          setIsDetailsModalOpen(false);
-          setIsAppDownloadModalOpen(true);
-        }}
       />
 
       {/* Professional Registration Modal */}
       <JoinProModal
         isOpen={isJoinProModalOpen}
         onClose={() => setIsJoinProModalOpen(false)}
-      />
-
-      {/* Mobile App Download Modal */}
-      <AppDownloadModal
-        isOpen={isAppDownloadModalOpen}
-        onClose={() => setIsAppDownloadModalOpen(false)}
       />
 
       {/* Emergency SOS Dispatch Modal */}
@@ -317,9 +294,6 @@ function MainLayout() {
         onOpenJoinPro={handleOpenJoinPro}
         onExploreOtherServices={() => handleOpenFindModal('all')}
       />
-
-      {/* Floating PWA Install & Direct APK Download Banner */}
-      <PWAInstallBanner />
     </div>
   );
 }

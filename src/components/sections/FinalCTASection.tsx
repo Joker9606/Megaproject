@@ -1,14 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Search, ShieldCheck, Zap, Sparkles, Download } from 'lucide-react';
-import { triggerApkDownload } from '../../utils/appInstall';
+import { Search, ShieldCheck, Zap, Sparkles } from 'lucide-react';
 
 interface FinalCTASectionProps {
-  onOpenAppModal: () => void;
   onOpenFindModal: () => void;
 }
 
-export function FinalCTASection({ onOpenAppModal, onOpenFindModal }: FinalCTASectionProps) {
+export function FinalCTASection({ onOpenFindModal }: FinalCTASectionProps) {
   return (
     <section className="relative py-24 bg-gradient-to-b from-slate-50 to-blue-50/50 overflow-hidden text-center border-t border-slate-200">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
@@ -31,21 +29,11 @@ export function FinalCTASection({ onOpenAppModal, onOpenFindModal }: FinalCTASec
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
-          <a
-            href="/SmartNeighborhood-v1.0.apk"
-            download="SmartNeighborhood-v1.0.apk"
-            onClick={() => triggerApkDownload()}
-            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base shadow-sm hover:shadow transition flex items-center gap-2.5 cursor-pointer"
-          >
-            <Download className="w-5 h-5" />
-            <span>Download Android APK</span>
-          </a>
-
           <button
             onClick={onOpenFindModal}
-            className="px-8 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 font-bold text-sm sm:text-base transition shadow-sm flex items-center gap-2"
+            className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base shadow-sm hover:shadow transition flex items-center gap-2"
           >
-            <Search className="w-5 h-5 text-blue-600" />
+            <Search className="w-5 h-5" />
             <span>Find Help in My Area</span>
           </button>
         </div>

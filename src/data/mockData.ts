@@ -489,8 +489,8 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     id: 'faq-3',
     question: 'How do I contact local professionals from the directory?',
-    answer: 'You can explore complete service scopes and baseline rate benchmarks on the directory. Tap on any verified provider profile to view their direct phone contact or use our mobile app to connect instantly.',
-    category: 'Information',
+    answer: 'You can explore complete service scopes and baseline rate benchmarks on the directory. Tap on any verified provider profile to view their direct phone contact or book directly through the website.',
+    category: 'Directory',
   },
   {
     id: 'faq-4',

@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import confetti from 'canvas-confetti';
+import { LocationPicker } from '../common/LocationPicker';
+import { UserLocationData } from '../../services/locationApi';
 
 interface UserAuthFormProps {
   onSuccess?: () => void;
@@ -52,6 +54,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
   const [regPhone, setRegPhone] = useState('');
   const [regNeighborhood, setRegNeighborhood] = useState(NEIGHBORHOOD_OPTIONS[0]);
   const [regApartment, setRegApartment] = useState('');
+  const [regLocation, setRegLocation] = useState<UserLocationData | null>(null);
   const [regEmergencyContact, setRegEmergencyContact] = useState('');
   const [regEmergencyName, setRegEmergencyName] = useState('');
   const [regPassword, setRegPassword] = useState('');
@@ -140,6 +143,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
           apartment: regApartment,
           emergencyContact: regEmergencyContact,
           emergencyContactName: regEmergencyName,
+          location: regLocation || undefined,
         },
         regPassword
       );
@@ -425,33 +429,31 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
               </div>
             </div>
 
-            {/* Neighborhood & Apartment */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Neighborhood Sector <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <MapPin className="w-3.5 h-3.5" />
-                  </div>
-                  <select
-                    value={regNeighborhood}
-                    onChange={(e) => setRegNeighborhood(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs outline-none cursor-pointer"
-                  >
-                    {NEIGHBORHOOD_OPTIONS.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            {/* Location & Neighborhood with GPS Auto-detection */}
+            <div className="space-y-3 p-3 bg-slate-50/80 rounded-2xl border border-slate-200">
+              <LocationPicker
+                valueNeighborhood={regNeighborhood}
+                onChangeNeighborhood={(val) => setRegNeighborhood(val)}
+                location={regLocation}
+                onLocationChange={(loc) => {
+                  setRegLocation(loc);
+                  if (loc && !regApartment && loc.formattedAddress) {
+                    // prefill apartment/address if empty
+                    const parts = loc.formattedAddress.split(',');
+                    if (parts.length > 2) {
+                      setRegApartment(parts[0].trim());
+                    }
+                  }
+                }}
+                accentColor="emerald"
+                label="Residence Locality & GPS Location"
+                required={true}
+                helperText="Auto-detects coordinates via GPS or search any locality/pincode"
+              />
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Flat / House / Villa No.
+                  Flat / House / Villa / Door No.
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -461,8 +463,8 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
                     type="text"
                     value={regApartment}
                     onChange={(e) => setRegApartment(e.target.value)}
-                    placeholder="e.g. Flat 302, Palm Heights"
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 focus:border-emerald-600 focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
+                    placeholder="e.g. Flat 302, Palm Heights / 12th Main Rd"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 focus:border-emerald-600 rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none"
                   />
                 </div>
               </div>

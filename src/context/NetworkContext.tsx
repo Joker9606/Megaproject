@@ -24,6 +24,8 @@ interface NetworkContextType {
     email?: string;
     isEmergencyReady?: boolean;
     customCategory?: string;
+    location?: { latitude: number; longitude: number; formattedAddress?: string };
+    serviceRadiusKm?: number;
   }) => VerifiedPro;
   addCategoryGroup: (name: string, description?: string) => CategoryGroup;
   deletePro: (id: string) => void;
@@ -288,6 +290,8 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     email?: string;
     isEmergencyReady?: boolean;
     customCategory?: string;
+    location?: { latitude: number; longitude: number; formattedAddress?: string };
+    serviceRadiusKm?: number;
   }): VerifiedPro => {
     let finalServiceId = data.serviceId;
 
@@ -324,6 +328,8 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
       joinedYear: '2026',
       phone: data.phone,
       email: data.email,
+      ...(data.location ? { location: data.location } : {}),
+      ...(data.serviceRadiusKm ? { serviceRadiusKm: data.serviceRadiusKm } : {}),
     };
 
     setPros((prev) => [newPro, ...prev]);

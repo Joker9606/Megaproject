@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, ShieldCheck, UserCheck, ArrowRight } from 'lucide-react';
+import { X, CheckCircle2, ShieldCheck, UserCheck, ArrowRight, Navigation, Loader2 } from 'lucide-react';
 import { useNetwork } from '../../context/NetworkContext';
 import { useAuth } from '../../context/AuthContext';
 import confetti from 'canvas-confetti';
+import { detectCurrentLocation, UserLocationData } from '../../services/locationApi';
 
 interface JoinProModalProps {
   isOpen: boolean;
@@ -24,8 +25,27 @@ export function JoinProModal({ isOpen, onClose }: JoinProModalProps) {
     bio: '',
   });
 
+  const [proLocation, setProLocation] = useState<UserLocationData | null>(null);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDone, setIsDone] = useState(false);
+
+  const handleDetectGPS = async () => {
+    setIsDetectingLocation(true);
+    try {
+      const loc = await detectCurrentLocation();
+      setProLocation(loc);
+      const place = loc.neighborhood || loc.locality || loc.city || 'Local Locality';
+      setFormData((prev) => ({
+        ...prev,
+        neighborhood: `${place}, ${loc.city || 'Bengaluru'}`,
+      }));
+    } catch {
+      // ignore
+    } finally {
+      setIsDetectingLocation(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -48,6 +68,7 @@ export function JoinProModal({ isOpen, onClose }: JoinProModalProps) {
       neighborhood: formData.neighborhood.trim(),
       emergencyReady: true,
       bio: formData.bio.trim(),
+      location: proLocation || undefined,
     });
 
     registerPro({
@@ -61,6 +82,13 @@ export function JoinProModal({ isOpen, onClose }: JoinProModalProps) {
       phone: formData.phone.trim() || '+91 98450 00000',
       email: formData.email.trim() || `${formData.fullName.toLowerCase().replace(/\s+/g, '.')}@smartneighborhood.in`,
       isEmergencyReady: true,
+      location: proLocation
+        ? {
+            latitude: proLocation.latitude,
+            longitude: proLocation.longitude,
+            formattedAddress: proLocation.formattedAddress,
+          }
+        : undefined,
     });
 
     setIsSubmitting(false);
@@ -185,7 +213,27 @@ export function JoinProModal({ isOpen, onClose }: JoinProModalProps) {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Locality / Area</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-slate-700 block">Locality / Area</label>
+                      <button
+                        type="button"
+                        onClick={handleDetectGPS}
+                        disabled={isDetectingLocation}
+                        className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                      >
+                        {isDetectingLocation ? (
+                          <>
+                            <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                            <span>Detecting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Navigation className="w-2.5 h-2.5" />
+                            <span>GPS Auto-Detect</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={formData.neighborhood}

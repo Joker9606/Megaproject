@@ -49,6 +49,17 @@ export interface WorkerJobRecord {
   feedback?: string;
 }
 
+export interface UserGeoLocation {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  formattedAddress?: string;
+  neighborhood?: string;
+  city?: string;
+  pincode?: string;
+  source?: 'gps' | 'manual' | 'search';
+}
+
 export interface ResidentUser {
   id: string;
   role: 'user';
@@ -65,6 +76,7 @@ export interface ResidentUser {
   bloodGroup?: string;
   preferredPayment?: string;
   joinedDate: string;
+  location?: UserGeoLocation;
 }
 
 export interface WorkerUser {
@@ -88,6 +100,8 @@ export interface WorkerUser {
   reviewsCount: number;
   joinedDate: string;
   isAvailableNow: boolean;
+  location?: UserGeoLocation;
+  serviceRadiusKm?: number;
 }
 
 export type AuthAccount = ResidentUser | WorkerUser;

@@ -295,8 +295,13 @@ export function WorkerDashboard() {
                     Verified Professional
                   </span>
                 </div>
-                <p className="text-xs text-amber-700 font-semibold mt-0.5">
-                  {worker?.serviceName} • {worker?.neighborhood}
+                <p className="text-xs text-amber-700 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span>{worker?.serviceName} • {worker?.neighborhood}</span>
+                  {worker?.location && (
+                    <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-mono">
+                      📍 {worker.location.latitude.toFixed(4)}°, {worker.location.longitude.toFixed(4)}° {worker.serviceRadiusKm ? `(Radius: ${worker.serviceRadiusKm}km)` : ''}
+                    </span>
+                  )}
                 </p>
                 <p className="text-[11px] text-slate-500 mt-1">
                   Radar active: Scanning neighborhood for incoming customer bookings
@@ -1055,6 +1060,11 @@ export function WorkerDashboard() {
                       value={worker?.neighborhood || 'Indiranagar / 100ft Road'}
                       className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs cursor-not-allowed"
                     />
+                    {worker?.location && (
+                      <p className="text-[10px] text-emerald-700 font-medium mt-1">
+                        📍 GPS Verified: {worker.location.formattedAddress || `${worker.location.latitude.toFixed(4)}°, ${worker.location.longitude.toFixed(4)}°`} ({worker.serviceRadiusKm || 5} km service radius)
+                      </p>
+                    )}
                   </div>
                 </div>
 

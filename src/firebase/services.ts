@@ -23,7 +23,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { auth, db, googleProvider, isFirebaseConfigured } from './config';
-import { ResidentUser, WorkerUser, BookingRecord, WorkerJobRecord, AuthAccount } from '../types/auth';
+import { ResidentUser, WorkerUser, BookingRecord, WorkerJobRecord, AuthAccount, UserGeoLocation } from '../types/auth';
 import { VerifiedPro } from '../types';
 import { formatINR } from '../utils/formatCurrency';
 import { INITIAL_VERIFIED_PROS } from '../data/mockData';
@@ -151,6 +151,7 @@ export async function registerResidentInFirebase(
     apartment: string;
     emergencyContact: string;
     emergencyContactName?: string;
+    location?: UserGeoLocation;
   },
   password?: string
 ): Promise<{ success: boolean; resident?: ResidentUser; error?: string }> {
@@ -187,6 +188,7 @@ export async function registerResidentInFirebase(
       emergencyContact: data.emergencyContact || '+91 98450 99881',
       emergencyContactName: data.emergencyContactName || 'Emergency Kin',
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      ...(data.location ? { location: data.location } : {}),
     };
 
     // Save directly to Firestore
@@ -273,6 +275,8 @@ export async function registerWorkerInFirebase(
     aadhaarNumber?: string;
     emergencyReady?: boolean;
     bio?: string;
+    location?: UserGeoLocation;
+    serviceRadiusKm?: number;
   },
   password?: string
 ): Promise<{ success: boolean; worker?: WorkerUser; error?: string }> {
@@ -319,6 +323,8 @@ export async function registerWorkerInFirebase(
       reviewsCount: 0,
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
       isAvailableNow: true,
+      ...(data.location ? { location: data.location } : {}),
+      ...(data.serviceRadiusKm ? { serviceRadiusKm: data.serviceRadiusKm } : {}),
     };
 
     // Save directly to Firestore 'workers' and 'users'

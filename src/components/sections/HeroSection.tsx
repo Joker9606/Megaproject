@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2, Sparkles, Wrench, Star } from 'lucide-react';
+import { ShieldCheck, MapPin, Search, ArrowRight, CheckCircle2, Sparkles, Wrench, Star, Navigation, Loader2 } from 'lucide-react';
 import { NeighborhoodCanvas } from '../3d/NeighborhoodCanvas';
 import { ParticleNetwork3D } from '../3d/ParticleNetwork3D';
 import { useNetwork } from '../../context/NetworkContext';
 import { formatINR } from '../../utils/formatCurrency';
+import { detectCurrentLocation } from '../../services/locationApi';
 
 interface HeroSectionProps {
   onOpenFindModal: (serviceId?: string) => void;
@@ -15,6 +16,20 @@ export function HeroSection({ onOpenFindModal, onSelectProFromMap }: HeroSection
   const { services } = useNetwork();
   const [selectedService, setSelectedService] = useState('electrician');
   const [locationText, setLocationText] = useState('Indiranagar, Bengaluru (560038)');
+  const [isDetecting, setIsDetecting] = useState(false);
+
+  const handleDetectGPS = async () => {
+    setIsDetecting(true);
+    try {
+      const loc = await detectCurrentLocation();
+      const place = loc.neighborhood || loc.locality || loc.city || 'Detected Location';
+      setLocationText(`${place}, ${loc.city || 'Bengaluru'} ${loc.pincode ? `(${loc.pincode})` : ''}`);
+    } catch {
+      // ignore
+    } finally {
+      setIsDetecting(false);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +99,7 @@ export function HeroSection({ onOpenFindModal, onSelectProFromMap }: HeroSection
               </div>
 
               {/* Location Input */}
-              <div className="flex-1 flex items-center gap-2.5 px-3.5 py-2.5 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200">
+              <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl sm:rounded-2xl border border-slate-200">
                 <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
                 <input
                   type="text"
@@ -93,6 +108,19 @@ export function HeroSection({ onOpenFindModal, onSelectProFromMap }: HeroSection
                   placeholder="Locality / Pincode"
                   className="w-full bg-transparent text-xs sm:text-sm text-slate-800 font-medium focus:outline-none placeholder-slate-400"
                 />
+                <button
+                  type="button"
+                  onClick={handleDetectGPS}
+                  disabled={isDetecting}
+                  className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-blue-600 transition shrink-0"
+                  title="Auto-detect current GPS location"
+                >
+                  {isDetecting ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  ) : (
+                    <Navigation className="w-4 h-4" />
+                  )}
+                </button>
               </div>
 
               {/* Search Button */}

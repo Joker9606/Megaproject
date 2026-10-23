@@ -30,8 +30,10 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { ResidentUser } from '../../types/auth';
+import { ResidentUser, UserGeoLocation } from '../../types/auth';
 import confetti from 'canvas-confetti';
+import { LocationPicker } from '../common/LocationPicker';
+import { UserLocationData } from '../../services/locationApi';
 
 interface ResidentProfileModalProps {
   isOpen: boolean;
@@ -88,6 +90,19 @@ export function ResidentProfileModal({
   const [phone, setPhone] = useState(resident?.phone || '');
   const [avatar, setAvatar] = useState(resident?.avatar || DEFAULT_RESIDENT_AVATAR);
   const [neighborhood, setNeighborhood] = useState(resident?.neighborhood || NEIGHBORHOOD_OPTIONS[0]);
+  const [locationData, setLocationData] = useState<UserLocationData | null>(
+    resident?.location
+      ? {
+          latitude: resident.location.latitude,
+          longitude: resident.location.longitude,
+          formattedAddress: resident.location.formattedAddress || resident.neighborhood,
+          neighborhood: resident.location.neighborhood,
+          city: resident.location.city,
+          pincode: resident.location.pincode,
+          source: resident.location.source || 'gps',
+        }
+      : null
+  );
   const [apartment, setApartment] = useState(resident?.apartment || '');
   const [landmark, setLandmark] = useState(resident?.landmark || '');
   const [pincode, setPincode] = useState(resident?.pincode || '560038');
@@ -135,6 +150,19 @@ export function ResidentProfileModal({
       setPhone(resident.phone);
       setAvatar(resident.avatar || DEFAULT_RESIDENT_AVATAR);
       setNeighborhood(resident.neighborhood || NEIGHBORHOOD_OPTIONS[0]);
+      setLocationData(
+        resident.location
+          ? {
+              latitude: resident.location.latitude,
+              longitude: resident.location.longitude,
+              formattedAddress: resident.location.formattedAddress || resident.neighborhood,
+              neighborhood: resident.location.neighborhood,
+              city: resident.location.city,
+              pincode: resident.location.pincode,
+              source: resident.location.source || 'gps',
+            }
+          : null
+      );
       setApartment(resident.apartment || '');
       setLandmark(resident.landmark || '');
       setPincode(resident.pincode || '560038');
@@ -162,6 +190,7 @@ export function ResidentProfileModal({
       emergencyContact: emergencyContact.trim(),
       bloodGroup,
       preferredPayment,
+      location: locationData || undefined,
     });
 
     setIsSaved(true);
@@ -419,22 +448,20 @@ export function ResidentProfileModal({
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Primary Locality / Sector *</label>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 focus-within:border-blue-600 focus-within:bg-white rounded-xl text-xs text-slate-900">
-                      <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <select
-                        value={neighborhood}
-                        onChange={(e) => setNeighborhood(e.target.value)}
-                        className="w-full bg-transparent focus:outline-none text-xs text-slate-900 cursor-pointer"
-                      >
-                        {NEIGHBORHOOD_OPTIONS.map((loc) => (
-                          <option key={loc} value={loc}>
-                            {loc}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="sm:col-span-2 pt-1">
+                    <LocationPicker
+                      valueNeighborhood={neighborhood}
+                      onChangeNeighborhood={(val) => setNeighborhood(val)}
+                      location={locationData}
+                      onLocationChange={(loc) => {
+                        setLocationData(loc);
+                        if (loc?.pincode) setPincode(loc.pincode);
+                      }}
+                      accentColor="blue"
+                      label="Primary Locality & GPS Location"
+                      required={true}
+                      helperText="Keep your verified GPS location updated for quick doorstep service dispatches"
+                    />
                   </div>
                 </div>
 

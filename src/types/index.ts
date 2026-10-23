@@ -37,6 +37,12 @@ export interface VerifiedPro {
   joinedYear: string;
   phone?: string;
   email?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    formattedAddress?: string;
+  };
+  serviceRadiusKm?: number;
 }
 
 export interface Testimonial {

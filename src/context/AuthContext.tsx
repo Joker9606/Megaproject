@@ -7,6 +7,7 @@ import {
   AuthTab,
   BookingRecord,
   WorkerJobRecord,
+  UserGeoLocation,
 } from '../types/auth';
 import { isFirebaseConfigured } from '../firebase/config';
 import {
@@ -48,6 +49,7 @@ interface AuthContextType {
       apartment: string;
       emergencyContact: string;
       emergencyContactName?: string;
+      location?: UserGeoLocation;
     },
     password?: string
   ) => Promise<{ success: boolean; error?: string }>;
@@ -65,6 +67,8 @@ interface AuthContextType {
       aadhaarNumber?: string;
       emergencyReady?: boolean;
       bio?: string;
+      location?: UserGeoLocation;
+      serviceRadiusKm?: number;
     },
     password?: string
   ) => Promise<{ success: boolean; error?: string; worker?: WorkerUser }>;
@@ -302,6 +306,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       apartment: string;
       emergencyContact: string;
       emergencyContactName?: string;
+      location?: UserGeoLocation;
     },
     password?: string
   ): Promise<{ success: boolean; error?: string }> => {
@@ -357,6 +362,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       aadhaarNumber?: string;
       emergencyReady?: boolean;
       bio?: string;
+      location?: UserGeoLocation;
+      serviceRadiusKm?: number;
     },
     password?: string
   ): Promise<{ success: boolean; error?: string; worker?: WorkerUser }> => {

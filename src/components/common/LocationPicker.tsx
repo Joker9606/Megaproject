@@ -18,20 +18,7 @@ import {
   LocationSearchResult,
 } from '../../services/locationApi';
 
-export const POPULAR_NEIGHBORHOODS = [
-  'Indiranagar / 100ft Road',
-  'Koramangala 4th Block',
-  'HSR Layout Sector 2',
-  'Whitefield / ITPL Area',
-  'Jayanagar 4th T Block',
-  'Electronic City Phase 1',
-  'JP Nagar 7th Phase',
-  'Malleshwaram 15th Cross',
-  'Hebbal / Outer Ring Road',
-  'Bannerghatta Road Enclave',
-];
-
-interface LocationPickerProps {
+export interface LocationPickerProps {
   valueNeighborhood: string;
   onChangeNeighborhood: (val: string) => void;
   location: UserLocationData | null;
@@ -58,23 +45,22 @@ export function LocationPicker({
   onRadiusChange,
   helperText,
 }: LocationPickerProps) {
-  const [mode, setMode] = useState<'preset' | 'search' | 'gps'>('preset');
   const [isDetecting, setIsDetecting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Search autocomplete states
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(valueNeighborhood || '');
   const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync mode if location provided with GPS
+  // Sync searchQuery with valueNeighborhood if changed externally
   useEffect(() => {
-    if (location?.source === 'gps') {
-      setMode('gps');
+    if (valueNeighborhood && valueNeighborhood !== searchQuery && !showDropdown) {
+      setSearchQuery(valueNeighborhood);
     }
-  }, [location]);
+  }, [valueNeighborhood]);
 
   // Handle GPS Auto-Detection
   const handleDetectGPS = async () => {
@@ -83,19 +69,14 @@ export function LocationPicker({
     try {
       const data = await detectCurrentLocation();
       onLocationChange(data);
-      setMode('gps');
 
-      // Best effort matching or set formatted neighborhood
-      const matched = POPULAR_NEIGHBORHOODS.find((n) =>
-        data.neighborhood && n.toLowerCase().includes(data.neighborhood.toLowerCase())
-      );
-      if (matched) {
-        onChangeNeighborhood(matched);
-      } else if (data.neighborhood) {
-        onChangeNeighborhood(`${data.neighborhood}, ${data.city || 'Bengaluru'}`);
-      } else if (data.locality) {
-        onChangeNeighborhood(`${data.locality}, ${data.city || 'Bengaluru'}`);
-      }
+      const detected =
+        data.formattedAddress ||
+        (data.neighborhood ? `${data.neighborhood}, ${data.city || 'Bengaluru'}` : '') ||
+        (data.locality ? `${data.locality}, ${data.city || 'Bengaluru'}` : '') ||
+        'Current Location';
+      onChangeNeighborhood(detected);
+      setSearchQuery(detected);
     } catch (err: any) {
       setErrorMsg(err.message || 'Unable to retrieve your location via GPS.');
     } finally {
@@ -154,14 +135,13 @@ export function LocationPicker({
     onChangeNeighborhood(cleanNeighborhood);
     setSearchQuery(cleanNeighborhood);
     setShowDropdown(false);
-    setMode('search');
   };
 
   const handleClearLocation = () => {
     onLocationChange(null);
-    setMode('preset');
     setErrorMsg(null);
     setSearchQuery('');
+    onChangeNeighborhood('');
   };
 
   const borderFocusColor =
@@ -215,91 +195,40 @@ export function LocationPicker({
         </button>
       </div>
 
-      {/* Mode Switcher Tabs */}
-      <div className="grid grid-cols-2 p-0.5 bg-slate-100 rounded-lg text-[11px] font-semibold text-slate-600">
-        <button
-          type="button"
-          onClick={() => {
-            setMode('preset');
-            setErrorMsg(null);
-          }}
-          className={`py-1.5 px-2 rounded-md transition text-center ${
-            mode === 'preset' ? 'bg-white text-slate-900 shadow-xs font-bold' : 'hover:text-slate-900'
-          }`}
-        >
-          Select Sector
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setMode('search');
-            setErrorMsg(null);
-          }}
-          className={`py-1.5 px-2 rounded-md transition text-center ${
-            mode === 'search' || mode === 'gps'
-              ? 'bg-white text-slate-900 shadow-xs font-bold'
-              : 'hover:text-slate-900'
-          }`}
-        >
-          Search / Custom Address
-        </button>
-      </div>
-
-      {/* Mode 1: Sector Dropdown */}
-      {mode === 'preset' && (
+      {/* Direct Search / Custom Location Input */}
+      <div className="relative">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-            <MapPin className="w-3.5 h-3.5" />
-          </div>
-          <select
-            value={valueNeighborhood}
-            onChange={(e) => onChangeNeighborhood(e.target.value)}
-            className={`w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 ${borderFocusColor} focus:bg-white rounded-xl text-slate-900 text-xs outline-none cursor-pointer`}
-          >
-            {POPULAR_NEIGHBORHOODS.map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Mode 2: Search / Custom Location Input */}
-      {(mode === 'search' || mode === 'gps') && (
-        <div className="relative">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              {isSearching ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
-              ) : (
-                <Search className="w-3.5 h-3.5" />
-              )}
-            </div>
-            <input
-              type="text"
-              value={searchQuery || valueNeighborhood}
-              onChange={handleSearchChange}
-              onFocus={() => {
-                if (searchResults.length > 0) setShowDropdown(true);
-              }}
-              placeholder="Type locality, area, street, or pincode..."
-              className={`w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 ${borderFocusColor} focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none`}
-            />
-            {(searchQuery || valueNeighborhood) && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  onChangeNeighborhood(POPULAR_NEIGHBORHOODS[0]);
-                  setShowDropdown(false);
-                }}
-                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+            {isSearching ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+            ) : (
+              <Search className="w-3.5 h-3.5" />
             )}
           </div>
+          <input
+            type="text"
+            value={searchQuery || valueNeighborhood}
+            onChange={handleSearchChange}
+            onFocus={() => {
+              if (searchResults.length > 0) setShowDropdown(true);
+            }}
+            placeholder="Type locality, area, street, or pincode..."
+            className={`w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 ${borderFocusColor} focus:bg-white rounded-xl text-slate-900 text-xs placeholder-slate-400 outline-none`}
+          />
+          {(searchQuery || valueNeighborhood) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                onChangeNeighborhood('');
+                setShowDropdown(false);
+              }}
+              className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
 
           {/* Autocomplete Dropdown */}
           {showDropdown && searchResults.length > 0 && (
@@ -323,7 +252,6 @@ export function LocationPicker({
             </div>
           )}
         </div>
-      )}
 
       {/* Verified Location Card (when GPS/Search has coordinates) */}
       {location && (
@@ -379,7 +307,7 @@ export function LocationPicker({
           <div className="flex-1">
             <span>{errorMsg}</span>
             <span className="block text-[10px] text-amber-700 mt-0.5">
-              Tip: You can select a sector from the dropdown or type your locality manually.
+              Tip: You can use Auto-Detect GPS or search your locality manually.
             </span>
           </div>
         </div>

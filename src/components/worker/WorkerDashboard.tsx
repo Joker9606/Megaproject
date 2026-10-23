@@ -25,7 +25,6 @@ import {
   Calendar,
   Mail,
   Briefcase,
-  Save,
   RefreshCw,
   Camera,
   Upload,
@@ -128,9 +127,6 @@ export function WorkerDashboard() {
       setEditEmergency(worker.emergencyReady ?? true);
     }
   }, [worker]);
-
-  // Payout State
-  const [payoutSuccess, setPayoutSuccess] = useState(false);
 
   // Saved Jobs for this worker
   const completedJobs = getWorkerJobs(worker?.id);
@@ -259,13 +255,6 @@ export function WorkerDashboard() {
       // ignore
     }
     setTimeout(() => setProfileSaved(false), 3000);
-  };
-
-  // Payout simulation
-  const handleRequestPayout = () => {
-    if (totalEarningsCalculated <= 0) return;
-    setPayoutSuccess(true);
-    setTimeout(() => setPayoutSuccess(false), 3500);
   };
 
   return (
@@ -708,18 +697,11 @@ export function WorkerDashboard() {
         {/* TAB 3: EARNINGS & SAVED JOB HISTORY */}
         {activeTab === 'earnings' && (
           <div className="max-w-4xl mx-auto space-y-6 text-left">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
                 <p className="text-xs text-slate-500 font-semibold">Total Revenue Earned</p>
                 <h3 className="text-3xl font-black text-amber-600 mt-1">₹{totalEarningsCalculated}</h3>
-                <button
-                  type="button"
-                  onClick={handleRequestPayout}
-                  disabled={totalEarningsCalculated === 0}
-                  className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-sm transition disabled:opacity-40"
-                >
-                  Instant UPI Payout
-                </button>
+                <p className="text-[11px] text-slate-500 font-medium mt-2">Total earnings from completed service requests</p>
               </div>
 
               <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
@@ -727,20 +709,7 @@ export function WorkerDashboard() {
                 <h3 className="text-3xl font-black text-slate-900 mt-1">{completedJobs.length}</h3>
                 <p className="text-[11px] text-emerald-700 font-semibold mt-2">Saved in your Pro Profile</p>
               </div>
-
-              <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm">
-                <p className="text-xs text-slate-500 font-semibold">Platform Fee</p>
-                <h3 className="text-3xl font-black text-emerald-600 mt-1">0% Comm.</h3>
-                <p className="text-[11px] text-slate-500 font-medium mt-2">100% earnings go directly to you</p>
-              </div>
             </div>
-
-            {payoutSuccess && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Payout initiated! ₹{totalEarningsCalculated} dispatched to your registered UPI ID.</span>
-              </div>
-            )}
 
             {/* Real Saved Completed Jobs Table */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200 space-y-4 shadow-sm">
@@ -1087,32 +1056,6 @@ export function WorkerDashboard() {
                     className="w-5 h-5 rounded border-slate-300 text-amber-600 focus:ring-amber-500 accent-amber-600 cursor-pointer"
                   />
                 </div>
-
-                {/* Trust & Safety Status */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                  <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>Professional Verification Charter</span>
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-600">
-                    <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Trade Identity Verified</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 rounded-xl bg-white border border-slate-200">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>Police Background Clearance</span>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-sm transition flex items-center justify-center gap-2"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Save Pro Settings & Profile</span>
-                </button>
               </form>
             </div>
           </div>

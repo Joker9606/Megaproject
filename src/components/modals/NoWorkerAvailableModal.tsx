@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, X, Wrench, ShieldAlert, ArrowRight } from 'lucide-react';
+import { AlertCircle, X, ShieldAlert, ArrowRight } from 'lucide-react';
 import { ServiceItem } from '../../types';
 
 interface NoWorkerAvailableModalProps {
@@ -87,20 +87,6 @@ export function NoWorkerAvailableModal({
 
             {/* Action Buttons */}
             <div className="pt-2 space-y-2">
-              {onOpenJoinPro && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onOpenJoinPro();
-                  }}
-                  className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-sm transition flex items-center justify-center gap-2"
-                >
-                  <Wrench className="w-4 h-4" />
-                  <span>Register as a Pro for {serviceName}</span>
-                </button>
-              )}
-
               <button
                 type="button"
                 onClick={() => {

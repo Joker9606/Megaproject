@@ -26,19 +26,6 @@ interface UserAuthFormProps {
   onSuccess?: () => void;
 }
 
-const NEIGHBORHOOD_OPTIONS = [
-  'Indiranagar / 100ft Road',
-  'Koramangala 4th Block',
-  'HSR Layout Sector 2',
-  'Whitefield / ITPL Area',
-  'Jayanagar 4th T Block',
-  'Electronic City Phase 1',
-  'JP Nagar 7th Phase',
-  'Malleshwaram 15th Cross',
-  'Hebbal / Outer Ring Road',
-  'Bannerghatta Road Enclave',
-];
-
 export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
   const { activeTab, setActiveTab, loginResident, registerResident, isFirebaseOnline } = useAuth();
 
@@ -52,7 +39,7 @@ export function UserAuthForm({ onSuccess }: UserAuthFormProps) {
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPhone, setRegPhone] = useState('');
-  const [regNeighborhood, setRegNeighborhood] = useState(NEIGHBORHOOD_OPTIONS[0]);
+  const [regNeighborhood, setRegNeighborhood] = useState('');
   const [regApartment, setRegApartment] = useState('');
   const [regLocation, setRegLocation] = useState<UserLocationData | null>(null);
   const [regEmergencyContact, setRegEmergencyContact] = useState('');

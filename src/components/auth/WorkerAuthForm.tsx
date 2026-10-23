@@ -45,19 +45,6 @@ const SERVICE_OPTIONS = [
   { id: 'custom', name: 'Other Custom Specialty Trade', defaultRate: '299' },
 ];
 
-const NEIGHBORHOOD_OPTIONS = [
-  'Indiranagar / 100ft Road',
-  'Koramangala 4th Block',
-  'HSR Layout Sector 2',
-  'Whitefield / ITPL Area',
-  'Jayanagar 4th T Block',
-  'Electronic City Phase 1',
-  'JP Nagar 7th Phase',
-  'Malleshwaram 15th Cross',
-  'Hebbal / Outer Ring Road',
-  'Bannerghatta Road Enclave',
-];
-
 export function WorkerAuthForm({ onSuccess }: WorkerAuthFormProps) {
   const { activeTab, setActiveTab, loginWorker, registerWorker, isFirebaseOnline } = useAuth();
   const { registerPro } = useNetwork();
@@ -76,7 +63,7 @@ export function WorkerAuthForm({ onSuccess }: WorkerAuthFormProps) {
   const [customTradeName, setCustomTradeName] = useState('');
   const [regHourlyRate, setRegHourlyRate] = useState('249');
   const [regExperience, setRegExperience] = useState('5 Years');
-  const [regNeighborhood, setRegNeighborhood] = useState(NEIGHBORHOOD_OPTIONS[0]);
+  const [regNeighborhood, setRegNeighborhood] = useState('');
   const [regLocation, setRegLocation] = useState<UserLocationData | null>(null);
   const [regRadiusKm, setRegRadiusKm] = useState(5);
   const [regAadhaar, setRegAadhaar] = useState('');

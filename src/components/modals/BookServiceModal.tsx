@@ -297,7 +297,7 @@ export function BookServiceModal({ isOpen, onClose, service, pro }: BookServiceM
                 {/* Safety Guarantee */}
                 <div className="flex items-center gap-2 text-[11px] text-slate-400">
                   <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Includes 30-Day Neighborhood Service Warranty & Aadhaar verified pro.</span>
+                  <span>Includes 100% Aadhaar background verified professional.</span>
                 </div>
 
                 {/* Submit CTA */}

@@ -336,40 +336,9 @@ export function BookingPage({
                     <span>Advance Payment Required:</span>
                     <span className="font-bold text-emerald-600">₹0 (Pay Post-Service)</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-600">
-                    <span>30-Day Neighborhood Warranty:</span>
-                    <span className="font-bold text-blue-600">Included (Free re-check)</span>
-                  </div>
                   <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-sm">
                     <span className="font-extrabold text-slate-900">Payment Due:</span>
                     <span className="font-black text-base text-emerald-700">Settled After Job Satisfaction</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 text-[11px] text-blue-800 leading-relaxed">
-                  💡 <b>Zero upfront payment.</b> The technician inspects the task at your doorstep, agrees on the work scope, and you only pay after work completion.
-                </div>
-              </div>
-
-              {/* Trust Guarantees */}
-              <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 text-left">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <Check className="w-4 h-4" />
-                  </div>
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-900">100% Background Verified Pros</p>
-                    <p className="text-slate-500">Government ID & police checked before dispatch</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <Key className="w-4 h-4" />
-                  </div>
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-900">Secure 4-Digit Doorstep PIN</p>
-                    <p className="text-slate-500">Share with pro only when they arrive at your door</p>
                   </div>
                 </div>
               </div>
@@ -605,7 +574,7 @@ export function BookingPage({
                   </button>
 
                   <p className="text-center text-xs text-slate-500">
-                    By booking, you agree to our 30-Day Neighborhood Service Warranty & Safety Charter.
+                    By booking, you agree to our Service Guidelines & Safety Charter.
                   </p>
                 </div>
               </form>

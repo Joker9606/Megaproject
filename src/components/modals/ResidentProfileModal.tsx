@@ -41,19 +41,6 @@ interface ResidentProfileModalProps {
   onOpenBookings?: () => void;
 }
 
-const NEIGHBORHOOD_OPTIONS = [
-  'Indiranagar / 100ft Road',
-  'Koramangala 4th Block',
-  'HSR Layout Sector 2',
-  'Whitefield / ITPL Area',
-  'Jayanagar 4th T Block',
-  'Electronic City Phase 1',
-  'JP Nagar 7th Phase',
-  'Malleshwaram 15th Cross',
-  'Hebbal / Outer Ring Road',
-  'Bannerghatta Road Enclave',
-];
-
 const DEFAULT_RESIDENT_AVATAR = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
 
 const BLOOD_GROUPS = ['O+ (Positive)', 'A+ (Positive)', 'B+ (Positive)', 'AB+ (Positive)', 'O- (Negative)', 'A- (Negative)', 'B- (Negative)', 'AB- (Negative)'];
@@ -89,7 +76,7 @@ export function ResidentProfileModal({
   const [email, setEmail] = useState(resident?.email || '');
   const [phone, setPhone] = useState(resident?.phone || '');
   const [avatar, setAvatar] = useState(resident?.avatar || DEFAULT_RESIDENT_AVATAR);
-  const [neighborhood, setNeighborhood] = useState(resident?.neighborhood || NEIGHBORHOOD_OPTIONS[0]);
+  const [neighborhood, setNeighborhood] = useState(resident?.neighborhood || '');
   const [locationData, setLocationData] = useState<UserLocationData | null>(
     resident?.location
       ? {
@@ -149,7 +136,7 @@ export function ResidentProfileModal({
       setEmail(resident.email);
       setPhone(resident.phone);
       setAvatar(resident.avatar || DEFAULT_RESIDENT_AVATAR);
-      setNeighborhood(resident.neighborhood || NEIGHBORHOOD_OPTIONS[0]);
+      setNeighborhood(resident.neighborhood || '');
       setLocationData(
         resident.location
           ? {
@@ -644,32 +631,6 @@ export function ResidentProfileModal({
                     <span>View Detailed My Bookings Modal ({bookings.length})</span>
                   </button>
                 )}
-
-                {/* Payment preference */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                  <label className="block text-xs font-semibold text-slate-700">
-                    Preferred Post-Service Payment Method
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['UPI', 'Cash', 'Card'].map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        onClick={() => setPreferredPayment(mode)}
-                        className={`p-2 rounded-xl text-xs font-bold border transition ${
-                          preferredPayment === mode
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-slate-500">
-                    All doorstep services include ₹0 advance payment — pay only after service satisfaction.
-                  </p>
-                </div>
               </motion.div>
             )}
 
@@ -712,18 +673,6 @@ export function ResidentProfileModal({
                       <p className="text-xs font-bold text-slate-900">4-Digit Doorstep Start PIN</p>
                       <p className="text-[11px] text-slate-500">
                         No job can begin until you provide your unique secret OTP to the visiting technician.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
-                      <Award className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">30-Day Neighborhood Service Warranty</p>
-                      <p className="text-[11px] text-slate-500">
-                        If a repaired appliance, pipe, or wiring issue recurs within 30 days, re-inspection is 100% free.
                       </p>
                     </div>
                   </div>

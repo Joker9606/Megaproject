@@ -8,6 +8,9 @@ import {
   BookingRecord,
   WorkerJobRecord,
   UserGeoLocation,
+  WorkerComplaint,
+  ComplaintIncidentType,
+  ComplaintSeverity,
 } from '../types/auth';
 import { isFirebaseConfigured } from '../firebase/config';
 import {
@@ -28,6 +31,8 @@ import {
   updateResidentInFirestore,
   addWorkerJobToFirestore,
   seedInitialWorkersToFirestore,
+  addComplaintInFirestore,
+  subscribeToComplaints,
 } from '../firebase/services';
 
 interface AuthContextType {
@@ -104,6 +109,23 @@ interface AuthContextType {
   workerJobs: Record<string, WorkerJobRecord[]>;
   addWorkerJob: (job: WorkerJobRecord) => void;
   getWorkerJobs: (workerId?: string) => WorkerJobRecord[];
+
+  // Misbehavior Complaints Filed against Workers
+  complaints: WorkerComplaint[];
+  fileComplaint: (data: {
+    bookingId?: string;
+    workerId: string;
+    workerName: string;
+    workerService?: string;
+    workerAvatar?: string;
+    incidentType: ComplaintIncidentType;
+    severity: ComplaintSeverity;
+    title: string;
+    description: string;
+    incidentDate?: string;
+  }) => WorkerComplaint;
+  getWorkerComplaints: (workerId?: string) => WorkerComplaint[];
+  getUserComplaints: (userId?: string) => WorkerComplaint[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -113,6 +135,7 @@ const LOCAL_STORAGE_KEY_RESIDENTS = 'smart_neighborhood_residents_v3';
 const LOCAL_STORAGE_KEY_WORKERS = 'smart_neighborhood_workers_v3';
 const LOCAL_STORAGE_KEY_BOOKINGS = 'smart_neighborhood_bookings_v3';
 const LOCAL_STORAGE_KEY_WORKER_JOBS = 'smart_neighborhood_worker_jobs_v3';
+const LOCAL_STORAGE_KEY_COMPLAINTS = 'smart_neighborhood_complaints_v3';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isFirebaseOnline = isFirebaseConfigured();
@@ -176,6 +199,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return {};
   });
 
+  // 6. Misbehavior Complaints History
+  const [complaints, setComplaints] = useState<WorkerComplaint[]>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY_COMPLAINTS);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return [];
+  });
+
   // 1. ATTACH FIREBASE AUTH LISTENER & INITIAL SEEDING
   useEffect(() => {
     // Seed initial pros into Firestore if empty
@@ -222,9 +256,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setBookings(liveBookings);
     });
 
+    // Realtime Complaints Sync across residents & pros from Cloud Firestore
+    const unsubComplaints = subscribeToComplaints((liveComplaints) => {
+      setComplaints(liveComplaints);
+    });
+
     return () => {
       if (unsubWorkers) unsubWorkers();
       if (unsubBookings) unsubBookings();
+      if (unsubComplaints) unsubComplaints();
     };
   }, []);
 
@@ -272,6 +312,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error(e);
     }
   }, [workerJobs]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_COMPLAINTS, JSON.stringify(complaints));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [complaints]);
 
   // LOGIN RESIDENT
   const loginResident = async (
@@ -594,6 +642,92 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return workerJobs[targetId] || [];
   };
 
+  // FILE RESIDENT COMPLAINT AGAINST WORKER
+  const fileComplaint = (data: {
+    bookingId?: string;
+    workerId: string;
+    workerName: string;
+    workerService?: string;
+    workerAvatar?: string;
+    incidentType: ComplaintIncidentType;
+    severity: ComplaintSeverity;
+    title: string;
+    description: string;
+    incidentDate?: string;
+  }): WorkerComplaint => {
+    const complaintId = `CMP-${Date.now().toString().slice(-6)}`;
+    const newComplaint: WorkerComplaint = {
+      id: complaintId,
+      bookingId: data.bookingId,
+      workerId: data.workerId,
+      workerName: data.workerName,
+      workerService: data.workerService,
+      workerAvatar: data.workerAvatar,
+      userId: currentUser?.id || 'resident-user',
+      userName: currentUser?.name || 'Resident',
+      userPhone: currentUser?.phone || '',
+      incidentType: data.incidentType,
+      severity: data.severity,
+      title: data.title,
+      description: data.description,
+      incidentDate: data.incidentDate || new Date().toISOString(),
+      createdAt: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      status: 'Verified & Strike Issued',
+    };
+
+    setComplaints((prev) => [newComplaint, ...prev]);
+
+    // Update booking if attached
+    if (data.bookingId) {
+      setBookings((prev) =>
+        prev.map((b) => (b.id === data.bookingId ? { ...b, complaint: newComplaint } : b))
+      );
+    }
+
+    // Update worker's complaints count
+    setWorkers((prevWorkers) =>
+      prevWorkers.map((w) => {
+        if (
+          w.id === data.workerId ||
+          (data.workerName && w.name.toLowerCase() === data.workerName.toLowerCase())
+        ) {
+          const updatedCount = (w.complaintsCount || 0) + 1;
+          const updatedWorker = { ...w, complaintsCount: updatedCount };
+          updateWorkerInFirestore(w.id, { complaintsCount: updatedCount });
+          return updatedWorker;
+        }
+        return w;
+      })
+    );
+
+    // Save to Firestore
+    addComplaintInFirestore(newComplaint);
+
+    return newComplaint;
+  };
+
+  // GET COMPLAINTS FILED AGAINST A WORKER
+  const getWorkerComplaints = (workerId?: string): WorkerComplaint[] => {
+    const targetId = workerId || currentUser?.id;
+    if (!targetId) return [];
+    return complaints.filter((c) => {
+      if (c.workerId === targetId) return true;
+      if (currentUser && currentUser.role === 'worker' && c.workerName.toLowerCase() === currentUser.name.toLowerCase()) return true;
+      return false;
+    });
+  };
+
+  // GET COMPLAINTS FILED BY A USER
+  const getUserComplaints = (userId?: string): WorkerComplaint[] => {
+    const targetId = userId || currentUser?.id;
+    if (!targetId) return [];
+    return complaints.filter((c) => c.userId === targetId);
+  };
+
   const isAuthenticated = currentUser !== null;
 
   return (
@@ -627,6 +761,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         workerJobs,
         addWorkerJob,
         getWorkerJobs,
+        complaints,
+        fileComplaint,
+        getWorkerComplaints,
+        getUserComplaints,
       }}
     >
       {children}

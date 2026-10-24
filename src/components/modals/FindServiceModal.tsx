@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search, MapPin, Star, ShieldCheck, Info, Calendar } from 'lucide-react';
+import { X, Search, MapPin, Star, ShieldCheck, Info, Calendar, AlertTriangle, User } from 'lucide-react';
 import { useNetwork } from '../../context/NetworkContext';
+import { useAuth } from '../../context/AuthContext';
 import { VerifiedPro, ServiceItem } from '../../types';
 import { formatINR } from '../../utils/formatCurrency';
 
@@ -13,6 +14,7 @@ interface FindServiceModalProps {
   onBookService?: (service: ServiceItem) => void;
   onBookPro?: (pro: VerifiedPro) => void;
   onOpenJoinPro?: () => void;
+  onViewProProfile?: (pro: VerifiedPro) => void;
 }
 
 export function FindServiceModal({
@@ -23,8 +25,10 @@ export function FindServiceModal({
   onBookService,
   onBookPro,
   onOpenJoinPro,
+  onViewProProfile,
 }: FindServiceModalProps) {
   const { services, pros } = useNetwork();
+  const { complaints } = useAuth();
 
   const [selectedCategory, setSelectedCategory] = useState<string>(initialService || 'all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,12 +172,37 @@ export function FindServiceModal({
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-base font-bold text-slate-900">{pro.name}</h3>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                          <ShieldCheck className="w-3 h-3" /> Aadhaar Verified
-                        </span>
-                      </div>
+                      {(() => {
+                        const proComplaints = complaints.filter(
+                          (c) => c.workerId === pro.id || c.workerName.toLowerCase() === pro.name.toLowerCase()
+                        );
+                        const complaintsCount = proComplaints.length;
+                        return (
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-base font-bold text-slate-900">{pro.name}</h3>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                              <ShieldCheck className="w-3 h-3" /> Aadhaar Verified
+                            </span>
+                            {complaintsCount > 0 ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (onViewProProfile) onViewProProfile(pro);
+                                }}
+                                className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 flex items-center gap-1 transition"
+                                title="View misbehavior complaints on this worker's profile"
+                              >
+                                <AlertTriangle className="w-3 h-3 text-red-600" />
+                                <span>{complaintsCount} Misbehavior Report(s)</span>
+                              </button>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                Clean Conduct
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       <div className="text-xs text-blue-600 font-semibold mt-0.5">{pro.service}</div>
 
@@ -202,6 +231,17 @@ export function FindServiceModal({
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
+                      {onViewProProfile && (
+                        <button
+                          type="button"
+                          onClick={() => onViewProProfile(pro)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1"
+                          title="View professional profile and conduct history"
+                        >
+                          <User className="w-3 h-3 text-slate-600" />
+                          <span>Profile & Conduct</span>
+                        </button>
+                      )}
 
                       {onSelectServiceForDetails && (
                         <button

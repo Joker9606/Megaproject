@@ -28,6 +28,41 @@ export interface BookingRecord {
   feedback?: string;
   feedbackTags?: string[];
   feedbackGivenAt?: string;
+
+  // Misbehavior Complaints
+  complaint?: WorkerComplaint;
+}
+
+export type ComplaintIncidentType =
+  | 'misbehavior'
+  | 'verbal_abuse'
+  | 'harassment'
+  | 'overcharging'
+  | 'property_damage'
+  | 'unprofessional'
+  | 'intoxicated'
+  | 'other';
+
+export type ComplaintSeverity = 'mild' | 'moderate' | 'severe' | 'critical';
+
+export interface WorkerComplaint {
+  id: string;
+  bookingId?: string;
+  workerId: string;
+  workerName: string;
+  workerService?: string;
+  workerAvatar?: string;
+  userId: string;
+  userName: string;
+  userPhone?: string;
+  incidentType: ComplaintIncidentType;
+  severity: ComplaintSeverity;
+  title: string;
+  description: string;
+  incidentDate?: string;
+  createdAt: string;
+  status: 'Under Review' | 'Verified & Strike Issued' | 'Resolved';
+  resolutionNotes?: string;
 }
 
 export interface WorkerJobRecord {
@@ -100,6 +135,7 @@ export interface WorkerUser {
   reviewsCount: number;
   joinedDate: string;
   isAvailableNow: boolean;
+  complaintsCount?: number;
   location?: UserGeoLocation;
   serviceRadiusKm?: number;
 }

@@ -20,9 +20,12 @@ import {
   MessageSquare,
   Wrench,
   RotateCcw,
+  ShieldAlert,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { BookingRecord } from '../../types/auth';
+import { BookingRecord, WorkerComplaint } from '../../types/auth';
+import { FileComplaintModal } from '../modals/FileComplaintModal';
 import confetti from 'canvas-confetti';
 
 interface MyBookingsPageProps {
@@ -48,11 +51,15 @@ const RATING_LABELS: Record<number, string> = {
 };
 
 export function MyBookingsPage({ onBack, onOpenExploreServices }: MyBookingsPageProps) {
-  const { currentUser, getUserBookings, cancelBooking, submitBookingFeedback } = useAuth();
+  const { currentUser, getUserBookings, cancelBooking, submitBookingFeedback, complaints } = useAuth();
   const bookings = getUserBookings(currentUser?.id);
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'Confirmed' | 'Completed' | 'Cancelled'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Complaint modal states
+  const [complaintBooking, setComplaintBooking] = useState<BookingRecord | null>(null);
+  const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
 
   // Inline review editor states (keyed by booking ID)
   const [expandedReviewBookingId, setExpandedReviewBookingId] = useState<string | null>(null);
@@ -292,31 +299,86 @@ export function MyBookingsPage({ onBack, onOpenExploreServices }: MyBookingsPage
                       </div>
 
                       {/* Pro Details Box */}
-                      {booking.proName && (
-                        <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <img
-                              src={
-                                booking.proAvatar ||
-                                'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=120&auto=format&fit=crop&q=80'
-                              }
-                              alt={booking.proName}
-                              className="w-10 h-10 rounded-xl object-cover border border-slate-200"
-                            />
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-bold text-slate-900">{booking.proName}</span>
-                                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  Verified
-                                </span>
+                      {booking.proName && (() => {
+                        const bookingComplaint = booking.complaint || complaints.find((c) => c.bookingId === booking.id);
+                        return (
+                          <>
+                            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                              <div className="flex items-center gap-2.5">
+                                <img
+                                  src={
+                                    booking.proAvatar ||
+                                    'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=120&auto=format&fit=crop&q=80'
+                                  }
+                                  alt={booking.proName}
+                                  className="w-10 h-10 rounded-xl object-cover border border-slate-200"
+                                />
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-bold text-slate-900">{booking.proName}</span>
+                                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                      Verified
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-500">Assigned Neighborhood Technician</p>
+                                </div>
                               </div>
-                              <p className="text-[11px] text-slate-500">Assigned Neighborhood Technician</p>
+
+                              <div className="flex items-center gap-2">
+                                {bookingComplaint ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setComplaintBooking(booking);
+                                      setIsComplaintModalOpen(true);
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition flex items-center gap-1.5"
+                                  >
+                                    <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+                                    <span>Complaint: {bookingComplaint.status}</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setComplaintBooking(booking);
+                                      setIsComplaintModalOpen(true);
+                                    }}
+                                    className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                                    title="Report technician misbehavior, abusive language, overcharging, or damage"
+                                  >
+                                    <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+                                    <span>Report Misbehavior</span>
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                          </div>
 
-
-                        </div>
-                      )}
+                            {/* Complaint Details Card if Complaint is logged */}
+                            {bookingComplaint && (
+                              <div className="p-3.5 rounded-2xl bg-red-50/70 border border-red-200 text-xs space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-extrabold text-red-950 flex items-center gap-1.5">
+                                    <ShieldAlert className="w-4 h-4 text-red-600" />
+                                    <span>Worker Misbehavior Complaint Registered</span>
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-md font-bold text-[10px] bg-white border border-red-200 text-red-800">
+                                    Ref: {bookingComplaint.id}
+                                  </span>
+                                </div>
+                                <p className="font-bold text-slate-900 text-xs">{bookingComplaint.title}</p>
+                                <p className="text-slate-700 italic text-[11px] bg-white/80 p-2.5 rounded-xl border border-red-100">
+                                  &quot;{bookingComplaint.description}&quot;
+                                </p>
+                                <div className="text-[10px] text-slate-500 flex items-center justify-between pt-1 border-t border-red-200/60">
+                                  <span className="text-red-700 font-semibold">Incident: {bookingComplaint.incidentType.replace('_', ' ')}</span>
+                                  <span>Reported on {bookingComplaint.createdAt} • Posted on Pro Profile</span>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
 
                       {/* Location & Time slot chips */}
                       <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
@@ -592,6 +654,16 @@ export function MyBookingsPage({ onBack, onOpenExploreServices }: MyBookingsPage
           )}
         </div>
       </div>
+
+      {/* File Misbehavior Complaint Modal */}
+      <FileComplaintModal
+        isOpen={isComplaintModalOpen}
+        onClose={() => {
+          setIsComplaintModalOpen(false);
+          setComplaintBooking(null);
+        }}
+        booking={complaintBooking}
+      />
     </div>
   );
 }

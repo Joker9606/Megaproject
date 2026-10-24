@@ -25,6 +25,8 @@ import { JoinProModal } from './components/modals/JoinProModal';
 import { EmergencySOSModal } from './components/modals/EmergencySOSModal';
 import { NoWorkerAvailableModal } from './components/modals/NoWorkerAvailableModal';
 import { ResidentProfileModal } from './components/modals/ResidentProfileModal';
+import { WorkerPublicProfileModal } from './components/modals/WorkerPublicProfileModal';
+import { FileComplaintModal } from './components/modals/FileComplaintModal';
 
 import { ServiceItem, VerifiedPro } from './types';
 
@@ -52,7 +54,24 @@ function MainLayout() {
   const [bookingService, setBookingService] = useState<ServiceItem | null>(null);
   const [bookingPro, setBookingPro] = useState<VerifiedPro | null>(null);
 
+  // Pro Profile & Conduct Modal state
+  const [inspectingPro, setInspectingPro] = useState<VerifiedPro | null>(null);
+  const [isProProfileModalOpen, setIsProProfileModalOpen] = useState(false);
+
+  // Direct Complaint Modal state
+  const [complaintTargetWorker, setComplaintTargetWorker] = useState<VerifiedPro | null>(null);
+  const [isDirectComplaintModalOpen, setIsDirectComplaintModalOpen] = useState(false);
+
   // Handlers
+  const handleViewProProfile = (pro: VerifiedPro) => {
+    setInspectingPro(pro);
+    setIsProProfileModalOpen(true);
+  };
+
+  const handleOpenDirectComplaint = (pro: VerifiedPro) => {
+    setComplaintTargetWorker(pro);
+    setIsDirectComplaintModalOpen(true);
+  };
   const handleOpenFindModal = (serviceId?: string) => {
     setFindInitialService(serviceId);
     setIsFindModalOpen(true);
@@ -243,6 +262,7 @@ function MainLayout() {
           handleBookPro(pro);
         }}
         onOpenJoinPro={handleOpenJoinPro}
+        onViewProProfile={handleViewProProfile}
       />
 
       {/* Service Details & Scope Guide Modal */}
@@ -259,6 +279,34 @@ function MainLayout() {
           setIsDetailsModalOpen(false);
           handleBookPro(pro);
         }}
+        onViewProProfile={handleViewProProfile}
+      />
+
+      {/* Public Worker Profile & Misbehavior Complaints Record Modal */}
+      <WorkerPublicProfileModal
+        isOpen={isProProfileModalOpen}
+        onClose={() => {
+          setIsProProfileModalOpen(false);
+          setInspectingPro(null);
+        }}
+        pro={inspectingPro}
+        onBookPro={(pro) => {
+          setIsProProfileModalOpen(false);
+          handleBookPro(pro);
+        }}
+        onReportMisbehavior={(pro) => {
+          handleOpenDirectComplaint(pro);
+        }}
+      />
+
+      {/* Direct Worker Misbehavior Complaint Modal */}
+      <FileComplaintModal
+        isOpen={isDirectComplaintModalOpen}
+        onClose={() => {
+          setIsDirectComplaintModalOpen(false);
+          setComplaintTargetWorker(null);
+        }}
+        preselectedWorker={complaintTargetWorker}
       />
 
       {/* Professional Registration Modal */}

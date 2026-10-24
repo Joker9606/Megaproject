@@ -32,9 +32,10 @@ import {
   FileBarChart,
   BarChart3,
   FileText,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { WorkerUser, BookingRecord, WorkerJobRecord } from '../../types/auth';
+import { WorkerUser, BookingRecord, WorkerJobRecord, WorkerComplaint } from '../../types/auth';
 import { WorkerNavbar } from './WorkerNavbar';
 import { WorkerReportModal } from './WorkerReportModal';
 import confetti from 'canvas-confetti';
@@ -63,6 +64,7 @@ export function WorkerDashboard() {
     completeBookingWithPayment,
     addWorkerJob,
     getWorkerJobs,
+    getWorkerComplaints,
   } = useAuth();
   const worker = currentUser as WorkerUser;
 
@@ -140,6 +142,9 @@ export function WorkerDashboard() {
   const workerReviews = bookings.filter((b) => b.proId === worker?.id && b.rating);
   const liveRating = worker?.rating || 5.0;
   const liveReviewsCount = worker?.reviewsCount || workerReviews.length || 0;
+
+  // Misbehavior complaints filed against this worker
+  const workerComplaints: WorkerComplaint[] = getWorkerComplaints(worker?.id);
 
   // Compute live total earnings from completed jobs
   const totalEarningsCalculated = completedJobs.reduce((sum, job) => {
@@ -808,6 +813,28 @@ export function WorkerDashboard() {
                 </div>
               </div>
 
+              {workerComplaints.length > 0 && (
+                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-red-900">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldAlert className="w-5 h-5 text-red-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-red-950">
+                        Disciplinary Alert: {workerComplaints.length} Misbehavior Complaint(s) on Profile
+                      </p>
+                      <p className="text-[11px] text-red-700">
+                        Resident complaints have been officially recorded on your conduct record.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('profile')}
+                    className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition shrink-0 shadow-2xs"
+                  >
+                    View Complaints ({workerComplaints.length})
+                  </button>
+                </div>
+              )}
+
               {workerReviews.length === 0 ? (
                 <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
                   <Star className="w-8 h-8 text-slate-300 mx-auto" />
@@ -934,6 +961,117 @@ export function WorkerDashboard() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* OFFICIAL MISBEHAVIOR COMPLAINTS & CONDUCT RECORD ON WORKER'S PROFILE */}
+              <div
+                className={`p-5 sm:p-6 rounded-3xl border-2 shadow-sm space-y-4 ${
+                  workerComplaints.length > 0
+                    ? 'bg-gradient-to-br from-red-500/10 via-red-50/60 to-amber-500/10 border-red-300'
+                    : 'bg-gradient-to-br from-emerald-500/10 via-emerald-50/50 to-teal-500/10 border-emerald-300'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3.5">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm shrink-0 ${
+                        workerComplaints.length > 0 ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'
+                      }`}
+                    >
+                      {workerComplaints.length > 0 ? (
+                        <ShieldAlert className="w-6 h-6 text-white" />
+                      ) : (
+                        <ShieldCheck className="w-6 h-6 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-base sm:text-lg font-black text-slate-900">
+                          Resident Misbehavior Complaints & Conduct Record
+                        </h3>
+                        {workerComplaints.length > 0 ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300 text-[10px] font-extrabold flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3 text-red-600" />
+                            <span>{workerComplaints.length} Complaint(s) on Profile</span>
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>Clean Conduct Record</span>
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1 max-w-xl leading-relaxed">
+                        {workerComplaints.length > 0
+                          ? 'Residents have reported conduct or misbehavior incidents regarding your service. Each complaint is officially attached to your pro profile and monitored by the neighborhood moderation team.'
+                          : 'Zero misbehavior or conduct complaints on your profile. You maintain an exemplary community reputation.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Complaints List if any */}
+                {workerComplaints.length > 0 ? (
+                  <div className="space-y-3 pt-2 border-t border-red-200/80">
+                    {workerComplaints.map((comp) => (
+                      <div
+                        key={comp.id}
+                        className="p-4 rounded-2xl bg-white/95 border border-red-200 text-xs space-y-2 shadow-2xs"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-extrabold text-slate-900 text-sm">{comp.title}</span>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                                  comp.severity === 'critical'
+                                    ? 'bg-red-600 text-white'
+                                    : comp.severity === 'severe'
+                                    ? 'bg-orange-500 text-white'
+                                    : 'bg-amber-100 text-amber-900 border border-amber-300'
+                                }`}
+                              >
+                                {comp.severity.toUpperCase()} IMPACT
+                              </span>
+                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-200">
+                                Ref: {comp.id}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-red-700 font-semibold mt-0.5">
+                              Category: <span className="capitalize">{comp.incidentType.replace('_', ' ')}</span>
+                              {comp.bookingId && <span className="text-slate-500 font-normal ml-2">• Booking #{comp.bookingId}</span>}
+                            </p>
+                          </div>
+
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 shrink-0">
+                            {comp.status}
+                          </span>
+                        </div>
+
+                        <div className="p-3 bg-red-50/50 rounded-xl border border-red-100/80 text-slate-800 italic leading-relaxed text-xs">
+                          &quot;{comp.description}&quot;
+                        </div>
+
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                          <span>Complainant: {comp.userName}</span>
+                          <span>Filed on: {comp.createdAt}</span>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>
+                        Policy Notice: Excessive or unresolved misbehavior strikes lead to automatic temporary ban or removal from the neighborhood directory.
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pt-2 border-t border-emerald-200/60 flex items-center gap-2 text-xs text-emerald-800 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>No strikes or disciplinary infractions recorded against this account.</span>
+                  </div>
+                )}
               </div>
 
               {/* WORK PERFORMANCE & ANALYTICS REPORT SECTION */}

@@ -19,9 +19,12 @@ import {
   Check,
   Send,
   Award,
+  ShieldAlert,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { BookingRecord } from '../../types/auth';
+import { FileComplaintModal } from './FileComplaintModal';
 import confetti from 'canvas-confetti';
 
 interface MyBookingsModalProps {
@@ -52,7 +55,7 @@ export function MyBookingsModal({
   onClose,
   onOpenExploreServices,
 }: MyBookingsModalProps) {
-  const { currentUser, getUserBookings, cancelBooking, submitBookingFeedback } = useAuth();
+  const { currentUser, getUserBookings, cancelBooking, submitBookingFeedback, complaints } = useAuth();
   const bookings = getUserBookings(currentUser?.id);
 
   // Active Feedback Form State
@@ -62,6 +65,10 @@ export function MyBookingsModal({
   const [feedbackText, setFeedbackText] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [feedbackSubmittedSuccess, setFeedbackSubmittedSuccess] = useState<boolean>(false);
+
+  // Complaint modal states
+  const [complaintBooking, setComplaintBooking] = useState<BookingRecord | null>(null);
+  const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -232,16 +239,48 @@ export function MyBookingsModal({
                         <p className="text-xs text-slate-600 mt-0.5">{booking.taskDetails}</p>
 
                         {/* Assigned Pro */}
-                        {booking.proName && (
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-[11px] text-slate-500">Professional:</span>
-                            <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
-                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                              <span>{booking.proName}</span>
-                            </span>
+                        {booking.proName && (() => {
+                          const bookingComplaint = booking.complaint || complaints.find((c) => c.bookingId === booking.id);
+                          return (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 p-2 bg-slate-50 rounded-xl border border-slate-100">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-slate-500">Professional:</span>
+                                <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>{booking.proName}</span>
+                                </span>
+                              </div>
 
-                          </div>
-                        )}
+                              <div>
+                                {bookingComplaint ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setComplaintBooking(booking);
+                                      setIsComplaintModalOpen(true);
+                                    }}
+                                    className="px-2 py-0.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-[10px] font-bold transition flex items-center gap-1"
+                                  >
+                                    <AlertTriangle className="w-3 h-3 text-red-600" />
+                                    <span>Complaint: {bookingComplaint.status}</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setComplaintBooking(booking);
+                                      setIsComplaintModalOpen(true);
+                                    }}
+                                    className="px-2 py-0.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-[10px] font-bold transition flex items-center gap-1 shadow-2xs"
+                                  >
+                                    <ShieldAlert className="w-3 h-3 text-red-600" />
+                                    <span>Report Misbehavior</span>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
 
                         <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-600">
                           <div className="flex items-center gap-1 text-blue-700 font-medium">
@@ -537,6 +576,16 @@ export function MyBookingsModal({
           )}
         </AnimatePresence>
       </div>
+
+      {/* File Misbehavior Complaint Modal */}
+      <FileComplaintModal
+        isOpen={isComplaintModalOpen}
+        onClose={() => {
+          setIsComplaintModalOpen(false);
+          setComplaintBooking(null);
+        }}
+        booking={complaintBooking}
+      />
     </AnimatePresence>
   );
 }

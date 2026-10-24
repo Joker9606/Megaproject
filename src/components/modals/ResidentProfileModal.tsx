@@ -28,6 +28,7 @@ import {
   Camera,
   Upload,
   Trash2,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ResidentUser, UserGeoLocation } from '../../types/auth';
@@ -57,10 +58,12 @@ export function ResidentProfileModal({
     setActiveRole,
     setActiveTab: setAuthTab,
     getUserBookings,
+    getUserComplaints,
   } = useAuth();
 
   const resident = currentUser && currentUser.role === 'user' ? (currentUser as ResidentUser) : null;
   const bookings = getUserBookings(currentUser?.id);
+  const userComplaints = getUserComplaints(currentUser?.id);
 
   const activeBookingsCount = bookings.filter((b) => b.status === 'Confirmed' || b.status === 'In Progress').length;
   const completedBookingsCount = bookings.filter((b) => b.status === 'Completed').length;
@@ -615,6 +618,43 @@ export function ResidentProfileModal({
                     <p className="text-[10px] text-slate-500 uppercase font-semibold">Completed</p>
                     <p className="text-xl font-black text-emerald-600 mt-0.5">{completedBookingsCount}</p>
                   </div>
+                </div>
+
+                {/* Filed Complaints section */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
+                      <span>Misbehavior Reports Filed by You</span>
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                      {userComplaints.length} Records
+                    </span>
+                  </div>
+
+                  {userComplaints.length === 0 ? (
+                    <p className="text-[11px] text-slate-500">
+                      You haven&apos;t filed any complaints. If any worker misbehaves during a booking, you can report them from My Bookings.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {userComplaints.map((comp) => (
+                        <div
+                          key={comp.id}
+                          className="p-3 rounded-xl bg-white border border-red-200 text-xs space-y-1 shadow-2xs"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-900">{comp.workerName} ({comp.workerService})</span>
+                            <span className="px-2 py-0.2 rounded text-[9px] font-bold bg-red-100 text-red-800 border border-red-200">
+                              {comp.status}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 truncate">{comp.title}</p>
+                          <p className="text-[10px] text-slate-400">Ref: {comp.id} • {comp.createdAt}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Direct Action to open bookings */}

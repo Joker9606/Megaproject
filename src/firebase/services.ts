@@ -23,7 +23,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { auth, db, googleProvider, isFirebaseConfigured } from './config';
-import { ResidentUser, WorkerUser, BookingRecord, WorkerJobRecord, AuthAccount, UserGeoLocation } from '../types/auth';
+import { ResidentUser, WorkerUser, BookingRecord, WorkerJobRecord, AuthAccount, UserGeoLocation, WorkerComplaint } from '../types/auth';
 import { VerifiedPro } from '../types';
 import { formatINR } from '../utils/formatCurrency';
 import { INITIAL_VERIFIED_PROS } from '../data/mockData';
@@ -37,6 +37,7 @@ export const COLLECTIONS = {
   WORKER_JOBS: 'worker_jobs',
   EMERGENCY_ALERTS: 'emergency_alerts',
   SERVICES: 'services',
+  COMPLAINTS: 'complaints',
 };
 
 // Helper: Ensure valid email format for Firebase Auth (e.g. if phone provided)
@@ -762,6 +763,62 @@ export async function broadcastEmergencyAlert(
     console.error('[Firestore] Error saving emergency alert:', error);
   }
   return alert;
+}
+
+/**
+ * Record a Worker Misbehavior Complaint in Cloud Firestore
+ */
+export async function addComplaintInFirestore(complaint: WorkerComplaint): Promise<void> {
+  if (!db) return;
+
+  try {
+    const complaintDocRef = doc(db, COLLECTIONS.COMPLAINTS, complaint.id);
+    await setDoc(complaintDocRef, {
+      ...complaint,
+      createdAtServer: serverTimestamp(),
+    });
+    console.log(`⚠️ [Firestore] Worker Misbehavior Complaint logged: ${complaint.id} against ${complaint.workerName}`);
+
+    // If associated with a booking, update the booking document too
+    if (complaint.bookingId) {
+      const bookingDocRef = doc(db, COLLECTIONS.BOOKINGS, complaint.bookingId);
+      await updateDoc(bookingDocRef, {
+        complaint,
+        updatedAt: serverTimestamp(),
+      });
+    }
+  } catch (error) {
+    console.error('[Firestore] Error logging worker complaint:', error);
+  }
+}
+
+/**
+ * Real-time Listener for Worker Complaints from Cloud Firestore
+ */
+export function subscribeToComplaints(
+  onUpdate: (complaints: WorkerComplaint[]) => void
+): Unsubscribe | null {
+  if (!db) return null;
+
+  try {
+    const complaintsRef = collection(db, COLLECTIONS.COMPLAINTS);
+    return onSnapshot(
+      complaintsRef,
+      (snapshot) => {
+        const results: WorkerComplaint[] = [];
+        snapshot.forEach((docItem) => {
+          results.push(docItem.data() as WorkerComplaint);
+        });
+        onUpdate(results);
+      },
+      (error) => {
+        console.warn('[Firestore] Complaints listener notice:', error.message);
+      }
+    );
+  } catch (e) {
+    console.warn('[Firestore] Complaints subscription error:', e);
+    return null;
+  }
 }
 
 /**

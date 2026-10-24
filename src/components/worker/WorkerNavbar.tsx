@@ -16,8 +16,10 @@ export function WorkerNavbar({
   pendingLeadsCount,
   onOpenReport,
 }: WorkerNavbarProps) {
-  const { currentUser, toggleWorkerAvailability, logout } = useAuth();
+  const { currentUser, toggleWorkerAvailability, logout, getWorkerComplaints } = useAuth();
   const worker = currentUser as WorkerUser;
+  const workerComplaints = worker?.id ? getWorkerComplaints(worker.id) : [];
+  const complaintsCount = workerComplaints.length;
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur-xl shadow-sm">
@@ -84,13 +86,21 @@ export function WorkerNavbar({
 
           <button
             onClick={() => setActiveTab('profile')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
               activeTab === 'profile'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            My Profile & Rates
+            <span>My Profile & Rates</span>
+            {complaintsCount > 0 && (
+              <span
+                className="w-4 h-4 rounded-full bg-red-600 text-white text-[10px] flex items-center justify-center font-extrabold shadow-2xs"
+                title={`${complaintsCount} Misbehavior Complaint(s) on Record`}
+              >
+                !
+              </span>
+            )}
           </button>
         </nav>
 
@@ -189,11 +199,16 @@ export function WorkerNavbar({
 
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${
             activeTab === 'profile' ? 'bg-amber-500 text-slate-950' : 'text-slate-600'
           }`}
         >
-          Profile
+          <span>Profile</span>
+          {complaintsCount > 0 && (
+            <span className="w-3.5 h-3.5 rounded-full bg-red-600 text-white text-[9px] flex items-center justify-center font-extrabold">
+              !
+            </span>
+          )}
         </button>
       </div>
     </header>

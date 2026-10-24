@@ -43,6 +43,7 @@ export interface VerifiedPro {
     formattedAddress?: string;
   };
   serviceRadiusKm?: number;
+  complaintsCount?: number;
 }
 
 export interface Testimonial {

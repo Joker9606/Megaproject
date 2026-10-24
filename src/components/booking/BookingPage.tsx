@@ -185,7 +185,7 @@ export function BookingPage({
       address: address.trim(),
       neighborhood: proNeighborhood,
       timeSlot: customDate ? `${customDate} (${selectedSlot})` : selectedSlot,
-      price: 'Custom Quote on Visit',
+      price: baselineRate,
       taskDetails: fullDescription,
       status: 'Confirmed',
       otp,
@@ -274,18 +274,39 @@ export function BookingPage({
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Assigned Neighborhood Specialist
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                    Verified
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {pro && !pro.isAvailableNow ? (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                        Worker Unavailable (Offline)
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        Available & Verified
+                      </span>
+                    )}
+                  </div>
                 </div>
 
+                {pro && !pro.isAvailableNow && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-2 text-xs text-rose-800">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                    <span><b>Notice:</b> This specialist is currently offline. Your booking will be processed once they return online or assigned to the next available pro.</span>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-4">
-                  <img
-                    src={proAvatar}
-                    alt={proName}
-                    className="w-16 h-16 rounded-2xl object-cover border-2 border-blue-100 shadow-sm"
-                  />
+                  <div className="relative">
+                    <img
+                      src={proAvatar}
+                      alt={proName}
+                      className="w-16 h-16 rounded-2xl object-cover border-2 border-blue-100 shadow-sm"
+                    />
+                    {pro && !pro.isAvailableNow && (
+                      <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-rose-500 border-2 border-white" title="Worker Unavailable (Offline)" />
+                    )}
+                  </div>
                   <div>
                     <h2 className="text-base font-bold text-slate-900">{proName}</h2>
                     <p className="text-xs text-blue-600 font-semibold mt-0.5">
@@ -319,7 +340,7 @@ export function BookingPage({
                 <h3 className="text-sm font-bold text-slate-900 flex items-center justify-between">
                   <span>Work Scope & Payment Structure</span>
                   <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    Custom Quote on Work
+                    Standard Rate: {baselineRate}
                   </span>
                 </h3>
 
@@ -631,7 +652,7 @@ export function BookingPage({
               </div>
               <div className="flex items-center justify-between text-slate-600">
                 <span>Payment:</span>
-                <span className="font-bold text-emerald-700">Custom Quote (Pay After Service)</span>
+                <span className="font-bold text-emerald-700">{baselineRate} (Pay After Service)</span>
               </div>
             </div>
 

@@ -146,9 +146,9 @@ export function ServicesSection({ onSelectService, onBookService, onOpenExploreA
                 <div className="mt-6 pt-4 border-t border-slate-100 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Pricing Scheme</span>
+                      <span className="text-[10px] text-slate-400 block">Starting From</span>
                       <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        Custom Quote on Work
+                        {formatINR(service.startingPrice)}
                       </span>
                     </div>
 

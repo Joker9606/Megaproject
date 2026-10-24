@@ -68,7 +68,7 @@ export function WorkerReportModal({
         earnedAmount: '₹550',
         completedAt: 'Yesterday',
         paymentMethod: 'UPI',
-        invoiceNumber: 'INV-849102',
+        invoiceNumber: 'INV-006',
         status: 'Completed',
       },
       {
@@ -83,7 +83,7 @@ export function WorkerReportModal({
         earnedAmount: '₹349',
         completedAt: '3 days ago',
         paymentMethod: 'UPI',
-        invoiceNumber: 'INV-849088',
+        invoiceNumber: 'INV-005',
         status: 'Completed',
       },
       {
@@ -98,7 +98,7 @@ export function WorkerReportModal({
         earnedAmount: '₹799',
         completedAt: '5 days ago',
         paymentMethod: 'Cash',
-        invoiceNumber: 'INV-849041',
+        invoiceNumber: 'INV-004',
         status: 'Completed',
       },
       {
@@ -113,7 +113,7 @@ export function WorkerReportModal({
         earnedAmount: '₹450',
         completedAt: '10 days ago',
         paymentMethod: 'UPI',
-        invoiceNumber: 'INV-848992',
+        invoiceNumber: 'INV-003',
         status: 'Completed',
       },
       {
@@ -128,7 +128,7 @@ export function WorkerReportModal({
         earnedAmount: '₹600',
         completedAt: '14 days ago',
         paymentMethod: 'Cash',
-        invoiceNumber: 'INV-848911',
+        invoiceNumber: 'INV-002',
         status: 'Completed',
       },
       {
@@ -143,7 +143,7 @@ export function WorkerReportModal({
         earnedAmount: '₹299',
         completedAt: '21 days ago',
         paymentMethod: 'UPI',
-        invoiceNumber: 'INV-848834',
+        invoiceNumber: 'INV-001',
         status: 'Completed',
       },
     ];
@@ -584,7 +584,7 @@ Issued by Smart Neighborhood Help & Information Network
                             className="w-full bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-xl group-hover:from-amber-600 group-hover:to-amber-500 transition-all flex items-center justify-center"
                           >
                             <span className="text-[10px] font-extrabold text-slate-950 font-mono">
-                              {bucket.jobs}j
+                              {bucket.jobs} {bucket.jobs === 1 ? 'Job' : 'Jobs'}
                             </span>
                           </div>
                         </div>

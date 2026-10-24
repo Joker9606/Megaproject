@@ -23,6 +23,7 @@ export function UserProfileMenu({ onOpenBookings, onOpenProfile }: UserProfileMe
     logout,
     setActiveRole,
     setActiveTab,
+    switchToWorkerProfile,
   } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -167,14 +168,12 @@ export function UserProfileMenu({ onOpenBookings, onOpenProfile }: UserProfileMe
                 type="button"
                 onClick={() => {
                   setIsOpen(false);
-                  logout();
-                  setActiveRole('worker');
-                  setActiveTab('login');
+                  switchToWorkerProfile();
                 }}
                 className="w-full py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold transition flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
-                <span>Switch to Worker Portal</span>
+                <span>Switch to Worker Profile</span>
               </button>
 
               {/* Log Out */}

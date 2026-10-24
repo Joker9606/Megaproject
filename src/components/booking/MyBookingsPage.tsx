@@ -409,7 +409,11 @@ export function MyBookingsPage({ onBack, onOpenExploreServices }: MyBookingsPage
                       ) : (
                         <div>
                           <p className="text-[11px] text-slate-500 font-semibold">Payment Status</p>
-                          <p className="text-sm font-bold text-slate-900">Custom Quote on Visit</p>
+                          <p className="text-sm font-bold text-slate-900">
+                            {booking.price && !booking.price.toLowerCase().includes('custom')
+                              ? booking.price
+                              : 'Standard Rate (Pay Post-Service)'}
+                          </p>
                           <p className="text-[10px] text-slate-500 mt-0.5">Pay after service completion (₹0 advance)</p>
                           
                           <div className="mt-2.5 pt-2 border-t border-slate-200">

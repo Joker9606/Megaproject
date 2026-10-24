@@ -80,10 +80,15 @@ export function WorkerPublicProfileModal({
                   alt={pro.name}
                   className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-400 shadow-md"
                 />
-                {pro.isAvailableNow && (
+                {pro.isAvailableNow ? (
                   <span
                     className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900"
-                    title="Active Now"
+                    title="Duty: ONLINE & Available"
+                  />
+                ) : (
+                  <span
+                    className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-rose-500 border-2 border-slate-900"
+                    title="Worker Unavailable (Offline)"
                   />
                 )}
               </div>
@@ -94,6 +99,17 @@ export function WorkerPublicProfileModal({
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950">
                     {pro.service}
                   </span>
+                  {pro.isAvailableNow ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>Available Now</span>
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                      <span>Worker Unavailable (Offline)</span>
+                    </span>
+                  )}
                   {hasComplaints ? (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-500 text-white flex items-center gap-1 shadow-xs">
                       <AlertTriangle className="w-3 h-3" />
@@ -340,16 +356,27 @@ export function WorkerPublicProfileModal({
               </button>
 
               {onBookPro && (
-                <button
-                  onClick={() => {
-                    onClose();
-                    onBookPro(pro);
-                  }}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>Book This Pro</span>
-                </button>
+                pro.isAvailableNow ? (
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onBookPro(pro);
+                    }}
+                    className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Book This Pro</span>
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="px-4 py-2 rounded-xl bg-slate-200 text-slate-500 text-xs font-bold cursor-not-allowed flex items-center gap-1.5"
+                    title="This technician is currently offline"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    <span>Worker Unavailable</span>
+                  </button>
+                )
               )}
             </div>
           </div>

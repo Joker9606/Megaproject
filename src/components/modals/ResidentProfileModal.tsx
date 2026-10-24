@@ -59,6 +59,7 @@ export function ResidentProfileModal({
     setActiveTab: setAuthTab,
     getUserBookings,
     getUserComplaints,
+    switchToWorkerProfile,
   } = useAuth();
 
   const resident = currentUser && currentUser.role === 'user' ? (currentUser as ResidentUser) : null;
@@ -194,9 +195,7 @@ export function ResidentProfileModal({
 
   const handleSwitchToWorker = () => {
     onClose();
-    logout();
-    setActiveRole('worker');
-    setAuthTab('login');
+    switchToWorkerProfile();
   };
 
   return (
@@ -284,13 +283,26 @@ export function ResidentProfileModal({
                 </div>
               </div>
 
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Header Right Actions: Switch to Worker Profile & Close */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSwitchToWorker}
+                  className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black transition flex items-center gap-1.5 shadow-sm transform hover:scale-[1.02]"
+                  title="Switch to Worker Profile"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-950" />
+                  <span>Switch to Worker Profile</span>
+                </button>
+
+                {/* Close Button */}
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Error banner if file upload invalid */}
@@ -726,10 +738,10 @@ export function ResidentProfileModal({
                 <button
                   type="button"
                   onClick={handleSwitchToWorker}
-                  className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                  className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition flex items-center justify-center gap-1.5"
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Switch to Worker Portal</span>
+                  <span>Switch to Worker Profile</span>
                 </button>
 
                 <button

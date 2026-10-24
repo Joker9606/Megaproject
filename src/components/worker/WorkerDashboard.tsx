@@ -199,8 +199,15 @@ export function WorkerDashboard() {
     const finalAmountStr = `₹${amountClean}`;
     setFinalSettledAmount(finalAmountStr);
 
-    // Save job entry permanently to worker's profile
-    const invoiceNum = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
+    // Save job entry permanently to worker's profile with sequential invoice number (e.g. INV-001, INV-002)
+    const existingSeqNums = completedJobs
+      .map((j) => {
+        const match = j.invoiceNumber?.match(/INV-(\d+)/i);
+        return match ? parseInt(match[1], 10) : 0;
+      })
+      .filter((n) => !isNaN(n) && n < 10000);
+    const nextSeq = existingSeqNums.length > 0 ? Math.max(...existingSeqNums) + 1 : completedJobs.length + 1;
+    const invoiceNum = `INV-${String(nextSeq).padStart(3, '0')}`;
     const newJobRecord: WorkerJobRecord = {
       id: `job-${Date.now()}`,
       workerId: worker.id,

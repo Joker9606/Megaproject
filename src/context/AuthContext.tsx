@@ -79,6 +79,7 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; error?: string; worker?: WorkerUser }>;
   loginWithGoogle: (role?: UserRole) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  switchToWorkerProfile: (workerEmailOrId?: string) => void;
   toggleWorkerAvailability: () => void;
   updateWorkerProfile: (updatedData: Partial<WorkerUser>) => void;
   updateResidentProfile: (updatedData: Partial<ResidentUser>) => void;
@@ -493,6 +494,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveTab('login');
   };
 
+  // SWITCH DIRECTLY TO WORKER PROFILE
+  const switchToWorkerProfile = (workerEmailOrId?: string) => {
+    const target = workerEmailOrId
+      ? workers.find((w) => w.email === workerEmailOrId || w.id === workerEmailOrId)
+      : (workers.find((w) => w.email === currentUser?.email) || workers[0]);
+
+    if (target) {
+      setCurrentUser(target);
+      setActiveRole('worker');
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY_AUTH_USER, JSON.stringify(target));
+      } catch {}
+    } else {
+      logout();
+      setActiveRole('worker');
+      setActiveTab('login');
+    }
+  };
+
   // ADD BOOKING
   const addBooking = (bookingData: Omit<BookingRecord, 'id' | 'createdAt'>): BookingRecord => {
     const newBooking: BookingRecord = {
@@ -747,6 +767,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         registerWorker,
         loginWithGoogle,
         logout,
+        switchToWorkerProfile,
         toggleWorkerAvailability,
         updateWorkerProfile,
         updateResidentProfile,

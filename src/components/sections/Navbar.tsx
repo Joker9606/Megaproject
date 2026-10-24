@@ -21,7 +21,7 @@ export function Navbar({
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, currentUser, logout, setActiveRole, setActiveTab, getUserBookings } = useAuth();
+  const { isAuthenticated, currentUser, logout, setActiveRole, setActiveTab, getUserBookings, switchToWorkerProfile } = useAuth();
   const bookingsCount = getUserBookings(currentUser?.id).length;
 
   useEffect(() => {
@@ -43,9 +43,7 @@ export function Navbar({
   ];
 
   const handleSwitchToWorker = () => {
-    logout();
-    setActiveRole('worker');
-    setActiveTab('login');
+    switchToWorkerProfile();
   };
 
   const handleLinkClick = () => {
@@ -247,7 +245,7 @@ export function Navbar({
                 className="w-full py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs flex items-center justify-center gap-2"
               >
                 <Wrench className="w-3.5 h-3.5" />
-                <span>Switch to Worker Portal</span>
+                <span>Switch to Worker Profile</span>
               </button>
 
               {onOpenJoinModal && (

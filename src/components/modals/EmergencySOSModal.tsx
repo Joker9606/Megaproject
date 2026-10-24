@@ -87,7 +87,7 @@ export function EmergencySOSModal({ isOpen, onClose }: EmergencySOSModalProps) {
             address: address.trim(),
             neighborhood: resident?.neighborhood || matched.neighborhood || 'Indiranagar / 100ft Road',
             timeSlot: 'Immediate Dispatch (< 15 mins)',
-            price: 'Custom Quote on Visit',
+            price: matched.hourlyRate || '₹299',
             taskDetails: `Urgent Emergency Callout: ${selectedOption.name}`,
             status: 'Confirmed',
             otp,
